@@ -1,0 +1,4128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CODDEN — Independent Technology & Digital Creative Atelier</title>
+  <meta name="description" content="Codden is an independent technology and design studio. We design, engineer and scale high-concurrency digital platforms, software, and creative media for ambitious businesses.">
+
+  <!-- Google Fonts: Syne (bold brutalist display italic) & Space Grotesk / Inter (clean editorial Swiss) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Space+Grotesk:wght@400;500;600;700&family=Syne:ital,wght@0,700;0,800;1,800;1,900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/codden.css">
+
+  <style>
+    :root {
+      --frame-bg: #d2ded5;
+      --canvas-bg: #0c0d0e;
+      --canvas-surface: #131518;
+      --canvas-border: rgba(255, 255, 255, 0.08);
+      --canvas-border-strong: rgba(255, 255, 255, 0.18);
+      
+      --text-primary: #ffffff;
+      --text-secondary: #90969e;
+      --text-muted: #5e646d;
+      
+      --font-display: 'Syne', -apple-system, sans-serif;
+      --font-ui: 'Space Grotesk', -apple-system, sans-serif;
+      --font-body: 'Inter', -apple-system, sans-serif;
+
+      --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+      --transition-base: all 0.35s var(--ease-out-expo);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    
+
+    html {
+      background-color: var(--canvas-bg);
+      color: var(--text-primary);
+      font-family: var(--font-body);
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      overflow-x: hidden;
+      scroll-behavior: smooth;
+    }
+
+    body {
+      background-color: var(--canvas-bg);
+      padding: 0;
+      margin: 0;
+      min-height: 100vh;
+      opacity: 1;
+      overflow-x: hidden;
+    }
+
+    /* LUXURY KINETIC OPENING SCREEN (UPWARD CURTAIN REVEAL) */
+    .opening-curtain {
+      position: fixed;
+      inset: 0;
+      background: #08090a;
+      z-index: 99999;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      pointer-events: all;
+      transform: translateY(0%);
+      transition: transform 0.95s cubic-bezier(0.77, 0, 0.175, 1);
+      will-change: transform;
+      box-shadow: 0 30px 80px rgba(0, 0, 0, 0.95);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .opening-curtain.revealed {
+      transform: translateY(-100%) !important;
+      pointer-events: none !important;
+    }
+
+    .loader-brand-box {
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: clamp(4px, 1.2vw, 16px);
+      padding: 20px clamp(12px, 3vw, 40px);
+      max-width: 96vw;
+      margin: 0 auto;
+      will-change: transform;
+      transition: transform 0.95s cubic-bezier(0.77, 0, 0.175, 1), opacity 0.6s ease;
+    }
+
+    .opening-curtain.revealed .loader-brand-box {
+      transform: translateY(-30px);
+      opacity: 0.9;
+    }
+
+    .brand-char {
+      font-family: var(--font-display);
+      font-size: clamp(2.0rem, 8.8vw, 7.5rem);
+      font-weight: 900;
+      font-style: italic;
+      letter-spacing: clamp(0.01em, 0.3vw, 0.04em);
+      line-height: 1.05;
+      color: var(--text-primary);
+      display: inline-block;
+      opacity: 0;
+      transform: translateY(100%);
+      animation: charRiseUp 0.55s cubic-bezier(0.16, 1, 0.3, 1) var(--char-delay, 0.04s) forwards;
+      will-change: transform, opacity;
+    }
+
+    @keyframes charRiseUp {
+      0% {
+        opacity: 0;
+        transform: translateY(100%);
+      }
+      35% {
+        opacity: 1;
+      }
+      100% {
+        opacity: 1;
+        transform: translateY(0%);
+      }
+    }
+
+    /* Hero entrance cascading animations */
+    .hero-title-scaffold .headline-monument span {
+      display: inline-block;
+      transform: translateY(0%);
+      transition: transform 0.85s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .deck-anchor {
+      opacity: 1;
+      transform: scale(1) translateY(0);
+      transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    header.studio-nav {
+      opacity: 1;
+      transition: opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .scroll-rotator {
+      opacity: 1;
+      transition: opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .hero-lower-third {
+      opacity: 1;
+      transform: translateY(0);
+      filter: blur(0);
+      transition: opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1), transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    /* OBSIDIAN CANVAS SHELL */
+    .master-shell {
+      background: var(--canvas-bg);
+      border: none;
+      position: relative;
+      overflow: hidden;
+      width: 100%;
+      min-height: 100vh;
+      padding-top: clamp(72px, 6vw, 81px);
+    }
+
+    /* Atmospheric grid background */
+    .master-shell::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image: 
+        linear-gradient(to right, rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+      background-size: 80px 80px;
+      pointer-events: none;
+      z-index: 0;
+      mask-image: radial-gradient(circle at 50% 30%, black 40%, transparent 85%);
+      -webkit-mask-image: radial-gradient(circle at 50% 30%, black 40%, transparent 85%);
+    }
+
+    /* GLOBAL HEADER */
+    header.studio-nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 18px clamp(20px, 4vw, 56px);
+      background: rgba(12, 13, 14, 0.88);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--canvas-border);
+      width: 100%;
+      transition: transform 0.38s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1), background 0.3s ease;
+      will-change: transform;
+    }
+
+    header.studio-nav.is-hidden {
+      transform: translateY(-100%);
+    }
+
+    .brand-mark {
+      font-family: var(--font-display);
+      font-size: 1.45rem;
+      font-weight: 900;
+      font-style: italic;
+      letter-spacing: -0.01em;
+      color: var(--text-primary);
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .brand-status-dot {
+      width: 6px;
+      height: 6px;
+      background: #10b981;
+      border-radius: 50%;
+      box-shadow: 0 0 8px #10b981;
+      display: inline-block;
+    }
+
+    .nav-pill-cluster {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(255, 255, 255, 0.035);
+      border: 1px solid var(--canvas-border);
+      padding: 5px 8px;
+      border-radius: 9999px;
+    }
+
+    .nav-pill-item {
+      font-family: var(--font-ui);
+      font-size: 0.8rem;
+      font-weight: 500;
+      color: var(--text-secondary);
+      text-decoration: none;
+      padding: 6px 14px;
+      border-radius: 9999px;
+      transition: var(--transition-base);
+    }
+
+    .nav-pill-item:hover,
+    .nav-pill-item.active {
+      color: var(--text-primary);
+      background: rgba(255, 255, 255, 0.08);
+    }
+
+    .nav-actions-group {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .btn-action-pill {
+      font-family: var(--font-ui);
+      font-size: 0.74rem;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      background: var(--text-primary);
+      color: #000000;
+      padding: 7px 15px;
+      border-radius: 9999px;
+      text-decoration: none;
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      box-shadow: 0 2px 10px rgba(255, 255, 255, 0.1);
+      white-space: nowrap;
+    }
+
+    .btn-action-pill:hover {
+      background: #e2e8e4;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 16px rgba(255, 255, 255, 0.2);
+    }
+
+    .nav-sidebar-toggle-btn {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      display: inline-flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      cursor: pointer;
+      padding: 0;
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+      color: #ffffff;
+      flex-shrink: 0;
+    }
+
+    .nav-sidebar-toggle-btn:hover {
+      background: rgba(255, 255, 255, 0.1);
+      border-color: rgba(255, 255, 255, 0.28);
+      transform: scale(1.05);
+    }
+
+    .nav-sidebar-toggle-btn .toggle-bar {
+      width: 16px;
+      height: 1.5px;
+      background: #ffffff;
+      border-radius: 2px;
+      transition: all 0.2s ease;
+      display: block;
+    }
+
+    .nav-sidebar-toggle-btn .toggle-bar:nth-child(2) {
+      width: 10px;
+      align-self: flex-start;
+      margin-left: 10px;
+    }
+
+    /* HERO STAGE */
+    .hero-viewport {
+      position: relative;
+      min-height: calc(100dvh - 80px);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: clamp(24px, 4vw, 44px) clamp(20px, 4vw, 56px) 36px clamp(20px, 4vw, 56px);
+      z-index: 1;
+    }
+
+    .hero-center-stage {
+      --card-w: 365px;
+      --fan: 48px;
+      position: relative;
+      display: grid;
+      grid-template-columns: minmax(0, 1.22fr) minmax(0, 0.88fr);
+      align-items: center;
+      gap: clamp(28px, 4vw, 72px);
+      width: 100%;
+      margin: 14px 0 28px 0;
+      min-height: 500px;
+    }
+
+    .hero-title-scaffold {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: clamp(20px, 2.2vw, 30px);
+      min-width: 0;
+      z-index: 2;
+    }
+
+    /* Eyebrow */
+    .hero-eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 2px;
+    }
+
+    .hero-eyebrow-line {
+      width: 30px;
+      height: 2px;
+      background: rgba(255, 255, 255, 0.65);
+      display: inline-block;
+      border-radius: 2px;
+    }
+
+    .hero-eyebrow-text {
+      font-family: var(--font-ui);
+      font-size: 0.84rem;
+      font-weight: 600;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: rgba(255, 255, 255, 0.72);
+    }
+
+    .headline-monument {
+      font-family: var(--font-display);
+      font-size: clamp(3.6rem, 6.6vw, 6.8rem);
+      font-weight: 900;
+      font-style: italic;
+      letter-spacing: -0.038em;
+      line-height: 0.91;
+      text-transform: uppercase;
+      text-align: left;
+      user-select: none;
+    }
+
+    .headline-white {
+      color: #ffffff;
+      display: inline-block;
+    }
+
+    .headline-gradient {
+      background: linear-gradient(98deg, #a855f7 0%, #c084fc 26%, #818cf8 62%, #93c5fd 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      display: inline-block;
+      filter: drop-shadow(0 0 35px rgba(168, 85, 247, 0.28));
+    }
+
+    .hero-lead {
+      font-family: var(--font-body);
+      font-size: clamp(0.98rem, 1.1vw, 1.14rem);
+      font-weight: 400;
+      line-height: 1.7;
+      letter-spacing: 0;
+      text-transform: none;
+      color: #8e95a0;
+      max-width: 50ch;
+      margin: 0;
+    }
+
+    /* CTA cluster */
+    .hero-cta-cluster {
+      display: flex;
+      align-items: center;
+      gap: 24px;
+      margin-top: 10px;
+      flex-wrap: wrap;
+    }
+
+    .btn-primary-hero {
+      font-family: var(--font-ui);
+      font-size: 0.84rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      background: #ffffff;
+      color: #0c0d0e;
+      padding: 14px 28px;
+      border-radius: 9999px;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 4px 24px rgba(255, 255, 255, 0.18);
+      transition: transform 0.25s ease, background 0.25s ease, box-shadow 0.25s ease;
+    }
+
+    .btn-primary-hero:hover {
+      background: #f1f5f3;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 32px rgba(255, 255, 255, 0.28);
+    }
+
+    .btn-arrow-icon {
+      font-size: 1.05rem;
+      line-height: 1;
+    }
+
+    .btn-watch-work {
+      display: inline-flex;
+      align-items: center;
+      gap: 14px;
+      text-decoration: none;
+      color: #ffffff;
+      font-family: var(--font-body);
+      font-size: 0.95rem;
+      font-weight: 500;
+      transition: opacity 0.25s ease;
+    }
+
+    .btn-watch-work:hover {
+      opacity: 0.85;
+    }
+
+    .watch-play-circle {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #ffffff;
+      transition: background 0.25s ease, transform 0.25s ease, border-color 0.25s ease;
+    }
+
+    .btn-watch-work:hover .watch-play-circle {
+      background: rgba(255, 255, 255, 0.12);
+      border-color: rgba(255, 255, 255, 0.28);
+      transform: scale(1.06);
+    }
+
+    .watch-label {
+      font-family: var(--font-body);
+      font-size: 0.95rem;
+      color: rgba(255, 255, 255, 0.9);
+    }
+
+    /* 3D DECK */
+    .deck-anchor {
+      position: relative;
+      z-index: 3;
+      justify-self: end;
+      width: calc(var(--card-w) + var(--fan) * 2.3);
+      height: calc(var(--card-w) / 0.74);
+      perspective: 1200px;
+      cursor: grab;
+    }
+
+    .deck-anchor:active {
+      cursor: grabbing;
+    }
+
+    /* Orbital Ring & Glow behind card deck */
+    .deck-orbit-glow {
+      position: absolute;
+      inset: -60px -30px -60px -80px;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    .orbit-glow-spot {
+      position: absolute;
+      width: 380px;
+      height: 380px;
+      left: 36%;
+      top: 45%;
+      transform: translate(-50%, -50%);
+      background: radial-gradient(circle, rgba(147, 51, 234, 0.25) 0%, rgba(99, 102, 241, 0.08) 50%, transparent 72%);
+      filter: blur(50px);
+    }
+
+    .orbit-ring {
+      position: absolute;
+      width: 500px;
+      height: 500px;
+      left: -75px;
+      top: -20px;
+      border: 1.5px solid rgba(168, 85, 247, 0.42);
+      border-radius: 50%;
+      transform: rotate(-18deg) scaleX(0.74);
+    }
+
+    .orbit-node {
+      position: absolute;
+      left: 20px;
+      top: 48%;
+      width: 9px;
+      height: 9px;
+      background: #ffffff;
+      border-radius: 50%;
+      box-shadow: 0 0 14px #c084fc, 0 0 28px #9333ea, 0 0 48px #7c3aed;
+    }
+
+    .deck-tilt-container {
+      width: 100%;
+      height: 100%;
+      position: relative;
+      transform-style: preserve-3d;
+      transition: transform 0.15s ease-out;
+      z-index: 2;
+    }
+
+    .deck-card {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: var(--card-w);
+      height: calc(var(--card-w) / 0.74);
+      border-radius: 28px;
+      overflow: hidden;
+      box-shadow: 0 32px 70px -15px rgba(0, 0, 0, 0.9), 0 0 0 1px rgba(255, 255, 255, 0.08);
+      background: #141619;
+      transform-origin: center center;
+      transition: transform 0.75s cubic-bezier(0.19, 1, 0.22, 1), opacity 0.75s ease;
+      will-change: transform, opacity;
+      user-select: none;
+    }
+
+    .deck-card img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      pointer-events: none;
+    }
+
+    /* Mechanical Card 04 face */
+    .card-mechanical-face {
+      position: absolute;
+      inset: 0;
+      background: 
+        radial-gradient(1.5px 1.5px at 20% 30%, rgba(255,255,255,0.3) 100%, transparent),
+        radial-gradient(1px 1px at 75% 25%, rgba(255,255,255,0.2) 100%, transparent),
+        radial-gradient(1.5px 1.5px at 35% 75%, rgba(255,255,255,0.25) 100%, transparent),
+        radial-gradient(1px 1px at 85% 70%, rgba(255,255,255,0.2) 100%, transparent),
+        linear-gradient(160deg, #181a20 0%, #0d0f13 100%);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 28px 24px;
+      z-index: 4;
+      pointer-events: none;
+      box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.15);
+    }
+
+    .card-mechanical-top,
+    .card-mechanical-bottom {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-family: var(--font-ui);
+      font-size: 0.78rem;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: rgba(255, 255, 255, 0.85);
+    }
+
+    .motion-pill-badge {
+      background: rgba(0, 0, 0, 0.55);
+      border: 1px solid rgba(255, 255, 255, 0.16);
+      padding: 4px 10px;
+      border-radius: 999px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.68rem;
+      letter-spacing: 0.1em;
+    }
+
+    .motion-dot-magenta {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #e879f9;
+      box-shadow: 0 0 8px #e879f9;
+    }
+
+    /* Floating Micro-Cards inside Mechanical Card */
+    .card-mechanical-body {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      padding: 12px 0;
+    }
+
+    .eng-chip {
+      border-radius: 20px;
+      padding: 16px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      box-shadow: 0 24px 50px rgba(0, 0, 0, 0.75), inset 0 1px 1px rgba(255, 255, 255, 0.15);
+    }
+
+    .eng-chip-backend {
+      background: rgba(22, 24, 32, 0.94);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      transform: rotate(-5deg) translate(-6px, -4px);
+      width: 86%;
+      align-self: flex-start;
+    }
+
+    .eng-chip-frontend {
+      background: rgba(26, 28, 38, 0.96);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      transform: rotate(-4deg) translate(30px, 4px);
+      width: 88%;
+      align-self: flex-end;
+    }
+
+    .eng-chip-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .eng-icon-github {
+      color: #ffffff;
+      flex-shrink: 0;
+    }
+
+    .eng-chip-title {
+      font-family: var(--font-body);
+      font-size: 1.05rem;
+      font-weight: 600;
+      color: #ffffff;
+      letter-spacing: -0.01em;
+    }
+
+    .eng-chip-status {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .eng-check-icon {
+      width: 17px;
+      height: 17px;
+      border-radius: 50%;
+      border: 1.5px solid #10b981;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      color: #10b981;
+      flex-shrink: 0;
+    }
+
+    .eng-chip-sub {
+      font-family: var(--font-body);
+      font-size: 0.8rem;
+      color: #8e95a0;
+      letter-spacing: 0.01em;
+    }
+
+    .eng-badge-js {
+      width: 26px;
+      height: 26px;
+      background: #f7df1e;
+      color: #000000;
+      font-family: var(--font-ui);
+      font-weight: 800;
+      font-size: 0.74rem;
+      border-radius: 6px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .eng-title-group {
+      display: flex;
+      align-items: baseline;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .eng-chip-tech {
+      font-family: var(--font-ui);
+      font-size: 0.8rem;
+      font-weight: 500;
+      color: #c084fc;
+    }
+
+    /* 3D Stack Positions: front card tilted with 3D perspective */
+    .deck-card.pos-0 {
+      transform: perspective(1200px) rotateY(-8deg) rotateX(4deg) rotateZ(-1.5deg) scale(1);
+      opacity: 1;
+      z-index: 10;
+    }
+
+    .deck-card.pos-1 {
+      transform: translate3d(var(--fan), -12px, -60px) scale(0.94) rotate(4deg);
+      opacity: 0.85;
+      z-index: 9;
+    }
+
+    .deck-card.pos-2 {
+      transform: translate3d(calc(var(--fan) * 1.9), -24px, -120px) scale(0.88) rotate(7.5deg);
+      opacity: 0.55;
+      z-index: 8;
+    }
+
+    .deck-card.pos-3 {
+      transform: translate3d(calc(var(--fan) * 2.7), -36px, -180px) scale(0.82) rotate(11deg);
+      opacity: 0.3;
+      z-index: 7;
+    }
+
+    .deck-card.pos-behind {
+      transform: translate3d(calc(var(--fan) * -1.1), 30px, -120px) scale(0.8) rotate(-6deg);
+      opacity: 0;
+      z-index: 1;
+    }
+
+    /* Card HUD for photo cards */
+    .frame-hud {
+      position: absolute;
+      inset: 18px;
+      pointer-events: none;
+      z-index: 5;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .frame-corner {
+      position: absolute;
+      width: 14px;
+      height: 14px;
+      border: 1.5px solid rgba(255, 255, 255, 0.6);
+      pointer-events: none;
+    }
+    .frame-corner.tl { top: 0; left: 0; border-right: none; border-bottom: none; }
+    .frame-corner.tr { top: 0; right: 0; border-left: none; border-bottom: none; }
+    .frame-corner.bl { bottom: 0; left: 0; border-right: none; border-top: none; }
+    .frame-corner.br { bottom: 0; right: 0; border-left: none; border-top: none; }
+
+    .frame-meta-top,
+    .frame-meta-bottom {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-family: var(--font-ui);
+      font-size: 0.7rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      font-weight: 700;
+      color: rgba(255, 255, 255, 0.85);
+      text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
+      padding: 0 4px;
+    }
+
+    .frame-rec-pill {
+      background: rgba(0, 0, 0, 0.65);
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      padding: 3px 8px;
+      border-radius: 999px;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .frame-rec-dot {
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      background: #ef4444;
+      animation: recBlink 1.4s infinite ease-in-out;
+    }
+
+    @keyframes recBlink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.25; }
+    }
+
+    a:focus-visible,
+    button:focus-visible,
+    [role="button"]:focus-visible {
+      outline: 2px solid var(--text-primary);
+      outline-offset: 3px;
+    }
+
+    /* HERO LOWER THIRD: 4-COLUMN FEATURE STRIP */
+    .hero-feature-quad {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: clamp(16px, 2.5vw, 40px);
+      padding-top: 36px;
+      border-top: 1px solid rgba(255, 255, 255, 0.06);
+      width: 100%;
+    }
+
+    .hero-feature-item {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .feature-icon-box {
+      width: 52px;
+      height: 52px;
+      flex-shrink: 0;
+      border-radius: 14px;
+      background: rgba(255, 255, 255, 0.035);
+      border: 1px solid rgba(255, 255, 255, 0.09);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #ffffff;
+      transition: transform 0.3s ease, background 0.3s ease, border-color 0.3s ease;
+    }
+
+    .hero-feature-item:hover .feature-icon-box {
+      background: rgba(255, 255, 255, 0.08);
+      border-color: rgba(255, 255, 255, 0.2);
+      transform: translateY(-2px);
+    }
+
+    .feature-text-block {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+
+    .feature-title {
+      font-family: var(--font-body);
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: #ffffff;
+      letter-spacing: -0.01em;
+      margin: 0;
+    }
+
+    .feature-sub {
+      font-family: var(--font-body);
+      font-size: 0.8rem;
+      color: #8e95a0;
+      margin: 0;
+      line-height: 1.4;
+    }
+
+    @media (max-width: 1200px) {
+      .hero-center-stage {
+        --card-w: 315px;
+        --fan: 38px;
+      }
+      .hero-feature-quad {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 24px;
+      }
+    }
+    /* UNIFIED EDITORIAL SECTIONS */
+    .editorial-section,
+    .section-container {
+      padding: 120px clamp(20px, 4vw, 56px);
+      border-top: 1px solid var(--canvas-border);
+      position: relative;
+    }
+
+    .editorial-header-wrap,
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      margin-bottom: 70px;
+      flex-wrap: wrap;
+      gap: 24px;
+    }
+
+    .editorial-main-title,
+    .section-heading {
+      font-family: var(--font-display);
+      font-size: clamp(2.8rem, 6vw, 5.5rem);
+      font-weight: 900;
+      line-height: 0.96;
+      letter-spacing: -0.02em;
+      text-transform: uppercase;
+    }
+
+    .editorial-statement,
+    .section-desc {
+      font-size: 1.15rem;
+      line-height: 1.6;
+      color: var(--text-secondary);
+      max-width: 520px;
+    }
+
+    /* Capabilities Rows */
+    .capabilities-index {
+      display: flex;
+      flex-direction: column;
+      border-bottom: 1px solid var(--canvas-border);
+    }
+
+    .cap-row {
+      display: grid;
+      grid-template-columns: 80px 2fr 3fr 1fr;
+      align-items: center;
+      padding: 34px 16px;
+      border-top: 1px solid var(--canvas-border);
+      text-decoration: none;
+      color: inherit;
+      transition: background 0.3s ease, padding-left 0.3s ease;
+      cursor: pointer;
+    }
+
+    .cap-row:hover {
+      background: rgba(255, 255, 255, 0.025);
+      padding-left: 28px;
+    }
+
+    .cap-num {
+      font-family: var(--font-ui);
+      font-size: 0.9rem;
+      font-weight: 500;
+      color: var(--text-muted);
+    }
+
+    .cap-heading {
+      font-family: var(--font-display);
+      font-size: 2rem;
+      font-weight: 800;
+      letter-spacing: -0.01em;
+      color: var(--text-primary);
+    }
+
+    .cap-details {
+      font-size: 0.95rem;
+      line-height: 1.55;
+      color: var(--text-secondary);
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .cap-tag {
+      padding: 4px 12px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 999px;
+      font-size: 0.76rem;
+      font-family: var(--font-ui);
+      letter-spacing: 0.04em;
+    }
+
+    .cap-arrow {
+      text-align: right;
+      font-size: 1.4rem;
+      color: var(--text-muted);
+      transition: transform 0.3s ease, color 0.3s ease;
+    }
+
+    .cap-row:hover .cap-arrow {
+      color: var(--text-primary);
+      transform: translate(6px, -6px);
+    }
+
+    /* Monument Statement */
+    .monument-statement-wrap {
+      padding: 140px clamp(20px, 4vw, 56px);
+      text-align: center;
+      background: #090a0b;
+      border-top: 1px solid var(--canvas-border);
+    }
+
+    .monument-statement {
+      font-family: var(--font-display);
+      font-size: clamp(2.6rem, 6.5vw, 6.2rem);
+      font-weight: 900;
+      line-height: 1.02;
+      letter-spacing: -0.02em;
+      text-transform: uppercase;
+      max-width: 1200px;
+      margin: 0 auto 36px auto;
+    }
+
+    .monument-statement .stone {
+      color: var(--text-muted);
+    }
+
+    .manifesto-flow {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 20px;
+      flex-wrap: wrap;
+      margin-top: 50px;
+      font-family: var(--font-ui);
+      font-size: 1.05rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text-secondary);
+    }
+
+    .manifesto-flow span.flow-arrow {
+      color: var(--text-muted);
+    }
+
+    /* Work Grid */
+    .portfolio-editorial {
+      padding: 120px clamp(20px, 4vw, 56px);
+      border-top: 1px solid var(--canvas-border);
+    }
+
+    .work-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 36px;
+      margin-top: 60px;
+    }
+
+    .work-item {
+      display: flex;
+      flex-direction: column;
+      gap: 22px;
+      text-decoration: none;
+      color: inherit;
+      cursor: pointer;
+    }
+
+    .work-media {
+      width: 100%;
+      height: 480px;
+      border-radius: 18px;
+      overflow: hidden;
+      background: #121418;
+      border: 1px solid var(--canvas-border);
+      position: relative;
+    }
+
+    .work-media img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.7s var(--ease-out-expo);
+    }
+
+    .work-item:hover .work-media img {
+      transform: scale(1.05);
+    }
+
+    .work-meta-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      border-bottom: 1px solid var(--canvas-border);
+      padding-bottom: 14px;
+    }
+
+    .work-title {
+      font-family: var(--font-display);
+      font-size: 1.8rem;
+      font-weight: 800;
+      letter-spacing: -0.01em;
+    }
+
+    .work-meta-info {
+      font-family: var(--font-ui);
+      font-size: 0.8rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text-secondary);
+    }
+
+    .work-desc {
+      font-size: 0.95rem;
+      line-height: 1.6;
+      color: var(--text-secondary);
+    }
+
+    .media-motion-hud {
+      position: absolute;
+      inset: 16px;
+      pointer-events: none;
+      z-index: 5;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      opacity: 0;
+      transition: opacity 0.35s ease;
+    }
+
+    .work-item:hover .media-motion-hud {
+      opacity: 1;
+    }
+
+    .hud-frame-code {
+      font-family: var(--font-ui);
+      font-size: 0.65rem;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      color: var(--text-primary);
+      background: rgba(0, 0, 0, 0.65);
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      padding: 4px 10px;
+      border-radius: 999px;
+    }
+
+    /* FINALE */
+    footer.studio-finale {
+      padding: 120px clamp(20px, 4vw, 56px) 40px clamp(20px, 4vw, 56px);
+      border-top: 1px solid var(--canvas-border);
+      background: #08090a;
+    }
+
+    .finale-monumental-text {
+      font-family: var(--font-display);
+      font-size: clamp(3.8rem, 10vw, 9.8rem);
+      font-weight: 900;
+      line-height: 0.92;
+      letter-spacing: -0.02em;
+      text-transform: uppercase;
+      margin-bottom: 50px;
+    }
+
+    .finale-contact-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      padding-top: 50px;
+      border-top: 1px solid var(--canvas-border);
+      flex-wrap: wrap;
+      gap: 30px;
+    }
+
+    .direct-mail {
+      font-family: var(--font-ui);
+      font-size: clamp(1.6rem, 3.4vw, 3.2rem);
+      font-weight: 700;
+      color: var(--text-primary);
+      text-decoration: none;
+      transition: opacity 0.25s ease;
+    }
+
+    .direct-mail:hover {
+      opacity: 0.7;
+    }
+
+    .finale-bottom-meta {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 60px;
+      font-family: var(--font-ui);
+      font-size: 0.72rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+    }
+
+    /* Footer Social Links */
+    .finale-social-cluster {
+      display: flex;
+      align-items: center;
+      gap: clamp(14px, 2.2vw, 24px);
+      font-family: var(--font-ui);
+      font-size: 0.74rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      flex-wrap: wrap;
+    }
+
+    .finale-social-link {
+      color: var(--text-secondary);
+      text-decoration: none;
+      white-space: nowrap;
+      transition: color 0.2s ease;
+    }
+
+    .finale-social-link:hover {
+      color: var(--text-primary);
+    }
+
+    /* ==========================================================================
+       LUXURY ARCHITECTURAL SIDEBAR DRAWER (REBUILT CLEAN)
+       ========================================================================== */
+    .nav-drawer-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(5, 6, 8, 0.72);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      z-index: 2999;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .nav-drawer-backdrop.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .nav-drawer {
+      position: fixed;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      width: clamp(320px, 28vw, 420px);
+      max-width: 100vw;
+      height: 100vh;
+      height: 100dvh;
+      background: rgba(12, 13, 16, 0.96);
+      backdrop-filter: blur(28px);
+      -webkit-backdrop-filter: blur(28px);
+      border-left: 1px solid rgba(255, 255, 255, 0.09);
+      box-shadow: -20px 0 80px rgba(0, 0, 0, 0.85);
+      z-index: 3000;
+      display: flex;
+      flex-direction: column;
+      transform: translateX(100%);
+      transition: transform 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+      overflow-y: auto;
+      overflow-x: hidden;
+      pointer-events: none;
+      box-sizing: border-box;
+      padding: 0 !important;
+    }
+
+    .nav-drawer.open {
+      transform: translateX(0);
+      pointer-events: auto;
+    }
+
+    .nav-drawer::before {
+      display: none !important;
+    }
+
+    .drawer-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 24px clamp(20px, 3vw, 32px);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+      flex-shrink: 0;
+      margin: 0 !important;
+    }
+
+    .drawer-brand {
+      font-family: var(--font-display);
+      font-size: 1.25rem;
+      font-weight: 900;
+      font-style: italic;
+      color: var(--text-primary);
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      letter-spacing: -0.01em;
+    }
+
+    .drawer-close-btn {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      color: var(--text-primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 0.82rem;
+      transition: all 0.2s ease;
+      padding: 0;
+    }
+
+    .drawer-close-btn:hover {
+      background: #ffffff;
+      color: #000000;
+      transform: scale(1.06);
+    }
+
+    .drawer-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 20px clamp(20px, 3vw, 32px) 28px clamp(20px, 3vw, 32px);
+      gap: 28px;
+      box-sizing: border-box;
+      margin: 0 !important;
+    }
+
+    .drawer-nav-menu {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .drawer-link {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 14px;
+      border-radius: 10px;
+      text-decoration: none;
+      color: rgba(255, 255, 255, 0.65);
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .drawer-link-num {
+      font-family: var(--font-ui);
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      color: rgba(255, 255, 255, 0.35);
+      width: 26px;
+      flex-shrink: 0;
+      transition: color 0.2s ease;
+    }
+
+    .drawer-link-title {
+      font-family: var(--font-display);
+      font-size: clamp(1.15rem, 1.6vw, 1.35rem);
+      font-weight: 700;
+      letter-spacing: -0.01em;
+      flex: 1;
+      color: inherit;
+    }
+
+    .drawer-link-arrow {
+      font-family: var(--font-ui);
+      font-size: 0.9rem;
+      color: rgba(255, 255, 255, 0.3);
+      opacity: 0;
+      transform: translate(-4px, 4px);
+      transition: all 0.2s ease;
+    }
+
+    .drawer-link:hover {
+      color: #ffffff;
+      background: rgba(255, 255, 255, 0.05);
+      padding-left: 18px;
+    }
+
+    .drawer-link:hover .drawer-link-num {
+      color: var(--accent-emerald, #10b981);
+    }
+
+    .drawer-link:hover .drawer-link-arrow {
+      opacity: 1;
+      transform: translate(0, 0);
+      color: #ffffff;
+    }
+
+    .drawer-link.active {
+      color: #ffffff;
+      background: rgba(255, 255, 255, 0.06);
+    }
+
+    .drawer-link.active .drawer-link-num {
+      color: var(--accent-emerald, #10b981);
+    }
+
+    .drawer-link.active .drawer-link-arrow {
+      opacity: 0.6;
+      transform: translate(0, 0);
+    }
+
+    .drawer-footer-block {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      padding-top: 20px;
+      border-top: 1px solid rgba(255, 255, 255, 0.06);
+      flex-shrink: 0;
+    }
+
+    .drawer-cta-pill {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      background: #ffffff;
+      color: #0c0d0e;
+      padding: 12px 20px;
+      border-radius: 9999px;
+      font-family: var(--font-ui);
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      text-decoration: none;
+      transition: all 0.2s ease;
+      box-shadow: 0 4px 18px rgba(255, 255, 255, 0.14);
+    }
+
+    .drawer-cta-pill:hover {
+      background: #e2e8e4;
+      transform: translateY(-2px);
+      box-shadow: 0 6px 24px rgba(255, 255, 255, 0.22);
+    }
+
+    .drawer-contact-mini {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+
+    .drawer-contact-label {
+      font-family: var(--font-ui);
+      font-size: 0.68rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+    }
+
+    .drawer-contact-email {
+      font-family: var(--font-body);
+      font-size: 0.9rem;
+      color: var(--text-primary);
+      text-decoration: none;
+      transition: opacity 0.2s ease;
+    }
+
+    .drawer-contact-email:hover {
+      opacity: 0.75;
+    }
+
+    .drawer-meta-line {
+      display: flex;
+      justify-content: space-between;
+      font-family: var(--font-ui);
+      font-size: 0.68rem;
+      letter-spacing: 0.06em;
+      color: var(--text-muted);
+      padding-top: 8px;
+      border-top: 1px solid rgba(255, 255, 255, 0.04);
+    }
+
+    /* ==========================================================================
+       CASE STUDY DETAIL DRAWER — REFINED ARCHITECTURAL FINISH
+       ========================================================================== */
+    .case-drawer-topbar {
+      height: 56px !important;
+      min-height: 56px !important;
+      padding: 0 clamp(16px, 3vw, 36px) !important;
+      background: rgba(10, 11, 14, 0.94) !important;
+      backdrop-filter: blur(20px) !important;
+      -webkit-backdrop-filter: blur(20px) !important;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+      z-index: 100 !important;
+    }
+
+    .case-drawer-back-btn {
+      padding: 6px 14px !important;
+      font-size: 0.74rem !important;
+      border-radius: 9999px !important;
+      background: rgba(255, 255, 255, 0.04) !important;
+      border: 1px solid rgba(255, 255, 255, 0.1) !important;
+      gap: 7px !important;
+    }
+
+    .case-drawer-back-btn:hover {
+      background: rgba(255, 255, 255, 0.08) !important;
+      border-color: rgba(255, 255, 255, 0.22) !important;
+    }
+
+    .key-pill {
+      font-size: 0.6rem !important;
+      padding: 1px 5px !important;
+      border-radius: 4px !important;
+      background: rgba(255, 255, 255, 0.08) !important;
+      border: 1px solid rgba(255, 255, 255, 0.12) !important;
+    }
+
+    .case-nav-switcher {
+      gap: 4px !important;
+      padding: 3px 5px !important;
+      background: rgba(255, 255, 255, 0.03) !important;
+      border: 1px solid rgba(255, 255, 255, 0.08) !important;
+      border-radius: 9999px !important;
+    }
+
+    .case-nav-item {
+      font-size: 0.72rem !important;
+      padding: 5px 12px !important;
+      border-radius: 9999px !important;
+      color: var(--text-secondary) !important;
+    }
+
+    .case-nav-item.active {
+      background: rgba(255, 255, 255, 0.12) !important;
+      color: #ffffff !important;
+      font-weight: 600 !important;
+    }
+
+    .case-live-link {
+      font-size: 0.72rem !important;
+      padding: 6px 14px !important;
+      border-radius: 9999px !important;
+      background: rgba(255, 255, 255, 0.04) !important;
+      border: 1px solid rgba(255, 255, 255, 0.12) !important;
+      color: #ffffff !important;
+    }
+
+    .case-live-link:hover {
+      background: rgba(255, 255, 255, 0.08) !important;
+      border-color: rgba(255, 255, 255, 0.22) !important;
+      color: #ffffff !important;
+    }
+
+    .case-drawer-x-btn {
+      width: 32px !important;
+      height: 32px !important;
+      font-size: 0.75rem !important;
+      border-radius: 50% !important;
+      background: rgba(255, 255, 255, 0.04) !important;
+      border: 1px solid rgba(255, 255, 255, 0.1) !important;
+      color: #ffffff !important;
+    }
+
+    .case-drawer-x-btn:hover {
+      background: #ffffff !important;
+      color: #000000 !important;
+    }
+
+    .case-badge-pill {
+      display: inline-block !important;
+      font-family: var(--font-ui) !important;
+      font-size: 0.68rem !important;
+      font-weight: 700 !important;
+      letter-spacing: 0.12em !important;
+      text-transform: uppercase !important;
+      color: rgba(255, 255, 255, 0.75) !important;
+      background: rgba(255, 255, 255, 0.04) !important;
+      border: 1px solid rgba(255, 255, 255, 0.12) !important;
+      padding: 4px 12px !important;
+      border-radius: 9999px !important;
+      margin-bottom: 14px !important;
+    }
+
+    .case-sidebar-title {
+      font-family: var(--font-display) !important;
+      font-size: clamp(1.5rem, 2.2vw, 2.1rem) !important;
+      font-weight: 800 !important;
+      letter-spacing: -0.02em !important;
+      line-height: 1.15 !important;
+      color: #ffffff !important;
+      margin-bottom: 12px !important;
+    }
+
+    .case-sidebar-sub {
+      font-size: 0.88rem !important;
+      line-height: 1.58 !important;
+      color: #8e95a0 !important;
+      margin-bottom: 20px !important;
+    }
+
+    .case-meta-spec-table {
+      border-top: 1px solid rgba(255, 255, 255, 0.08) !important;
+      margin-bottom: 22px !important;
+    }
+
+    .meta-spec-row {
+      display: flex !important;
+      justify-content: space-between !important;
+      align-items: baseline !important;
+      padding: 10px 0 !important;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06) !important;
+      font-size: 0.76rem !important;
+    }
+
+    .meta-spec-row .spec-label {
+      font-family: var(--font-ui) !important;
+      font-size: 0.68rem !important;
+      letter-spacing: 0.08em !important;
+      color: var(--text-muted) !important;
+    }
+
+    .meta-spec-row .spec-val {
+      font-family: var(--font-body) !important;
+      font-size: 0.78rem !important;
+      font-weight: 500 !important;
+      color: var(--text-primary) !important;
+      text-align: right !important;
+    }
+
+    .meta-spec-row .status-verified {
+      color: var(--accent-emerald) !important;
+      font-weight: 600 !important;
+    }
+
+    .sidebar-sec-label {
+      font-family: var(--font-ui) !important;
+      font-size: 0.68rem !important;
+      letter-spacing: 0.1em !important;
+      color: var(--text-muted) !important;
+      margin-bottom: 10px !important;
+    }
+
+    .tech-tag-pill {
+      font-family: var(--font-ui) !important;
+      font-size: 0.7rem !important;
+      padding: 4px 10px !important;
+      border-radius: 6px !important;
+      background: rgba(255, 255, 255, 0.035) !important;
+      border: 1px solid rgba(255, 255, 255, 0.08) !important;
+      color: var(--text-secondary) !important;
+    }
+
+    .btn-sidebar-contact {
+      display: inline-flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      gap: 10px !important;
+      background: #ffffff !important;
+      color: #0c0d0e !important;
+      padding: 11px 20px !important;
+      border-radius: 9999px !important;
+      font-family: var(--font-ui) !important;
+      font-size: 0.76rem !important;
+      font-weight: 700 !important;
+      letter-spacing: 0.04em !important;
+      text-transform: uppercase !important;
+      text-decoration: none !important;
+      transition: all 0.2s ease !important;
+      box-shadow: 0 4px 16px rgba(255, 255, 255, 0.12) !important;
+    }
+
+    .btn-sidebar-contact:hover {
+      background: #e2e8e4 !important;
+      transform: translateY(-2px) !important;
+      box-shadow: 0 6px 22px rgba(255, 255, 255, 0.2) !important;
+    }
+
+    .cta-subtext {
+      font-size: 0.7rem !important;
+      color: var(--text-muted) !important;
+      text-align: center !important;
+      margin-top: 8px !important;
+    }
+
+    /* Metric cards refinement */
+    .case-metrics-grid {
+      display: grid !important;
+      grid-template-columns: repeat(4, 1fr) !important;
+      gap: 12px !important;
+      margin: 24px 0 36px 0 !important;
+    }
+
+    .case-metric-card {
+      background: rgba(255, 255, 255, 0.02) !important;
+      border: 1px solid rgba(255, 255, 255, 0.07) !important;
+      border-radius: 12px !important;
+      padding: 16px 14px !important;
+    }
+
+    .metric-val {
+      font-family: var(--font-display) !important;
+      font-size: clamp(1.35rem, 2.0vw, 1.85rem) !important;
+      font-weight: 800 !important;
+      color: #ffffff !important;
+      line-height: 1 !important;
+      margin-bottom: 6px !important;
+    }
+
+    .metric-label {
+      font-family: var(--font-ui) !important;
+      font-size: 0.74rem !important;
+      font-weight: 600 !important;
+      color: var(--text-secondary) !important;
+      margin-bottom: 4px !important;
+    }
+
+    .metric-sub {
+      font-size: 0.72rem !important;
+      color: var(--text-muted) !important;
+      line-height: 1.4 !important;
+    }
+
+    .case-hero-media-wrap {
+      border-radius: 16px !important;
+      height: 420px !important;
+    }
+
+    .case-detail-section {
+      padding: 36px 0 !important;
+      border-top: 1px solid rgba(255, 255, 255, 0.08) !important;
+    }
+
+    .sec-num-header {
+      display: flex !important;
+      align-items: center !important;
+      gap: 10px !important;
+      margin-bottom: 10px !important;
+    }
+
+    .sec-num {
+      font-family: var(--font-ui) !important;
+      font-size: 0.72rem !important;
+      font-weight: 700 !important;
+      color: var(--accent-emerald) !important;
+    }
+
+    .sec-kicker {
+      font-family: var(--font-ui) !important;
+      font-size: 0.7rem !important;
+      letter-spacing: 0.1em !important;
+      text-transform: uppercase !important;
+      color: var(--text-muted) !important;
+    }
+
+    .sec-headline {
+      font-family: var(--font-display) !important;
+      font-size: clamp(1.15rem, 1.6vw, 1.45rem) !important;
+      font-weight: 700 !important;
+      color: #ffffff !important;
+      margin-bottom: 14px !important;
+      line-height: 1.25 !important;
+    }
+
+    .sec-prose {
+      font-size: 0.92rem !important;
+      line-height: 1.68 !important;
+      color: #8e95a0 !important;
+      max-width: 68ch !important;
+    }
+
+    .full-stack-strip {
+      margin-top: 20px !important;
+      padding: 14px 18px !important;
+      border-radius: 10px !important;
+      background: rgba(255, 255, 255, 0.025) !important;
+      border: 1px solid rgba(255, 255, 255, 0.08) !important;
+      font-size: 0.8rem !important;
+    }
+
+    .case-bottom-nav {
+      display: grid !important;
+      grid-template-columns: 1fr 1fr !important;
+      gap: 16px !important;
+      padding: 36px 0 20px 0 !important;
+      border-top: 1px solid rgba(255, 255, 255, 0.08) !important;
+    }
+
+    .case-bottom-btn {
+      padding: 16px 20px !important;
+      border-radius: 12px !important;
+      background: rgba(255, 255, 255, 0.03) !important;
+      border: 1px solid rgba(255, 255, 255, 0.08) !important;
+      cursor: pointer !important;
+      text-align: left !important;
+      transition: all 0.2s ease !important;
+    }
+
+    .case-bottom-btn:hover {
+      background: rgba(255, 255, 255, 0.06) !important;
+      border-color: rgba(255, 255, 255, 0.16) !important;
+    }
+
+    .case-bottom-btn.next {
+      text-align: right !important;
+    }
+
+    .btn-dir {
+      font-family: var(--font-ui) !important;
+      font-size: 0.68rem !important;
+      letter-spacing: 0.1em !important;
+      color: var(--text-muted) !important;
+      display: block !important;
+      margin-bottom: 4px !important;
+    }
+
+    .btn-title {
+      font-family: var(--font-body) !important;
+      font-size: 0.95rem !important;
+      font-weight: 600 !important;
+      color: #ffffff !important;
+    }
+
+    section[id],
+    .hero-viewport,
+    .section-container,
+    .editorial-section,
+    footer[id] {
+      scroll-margin-top: 80px;
+    }
+
+    @media (max-width: 1024px) {
+      section[id],
+      .hero-viewport,
+      .section-container,
+      .editorial-section,
+      footer[id] {
+        scroll-margin-top: 72px;
+      }
+      .nav-pill-cluster {
+        gap: 3px;
+        padding: 4px 6px;
+      }
+      .nav-pill-item {
+        padding: 5px 10px;
+        font-size: 0.72rem;
+      }
+      .btn-action-pill {
+        padding: 7px 16px;
+        font-size: 0.76rem;
+      }
+      .editorial-section,
+      .section-container {
+        padding: 72px clamp(20px, 4vw, 40px);
+      }
+      .editorial-main-title,
+      .section-heading {
+        font-size: clamp(2.2rem, 5vw, 3.4rem);
+        line-height: 1.0;
+        word-break: break-word;
+      }
+      .monument-statement-wrap {
+        padding: 80px clamp(20px, 4vw, 40px);
+      }
+      .monument-statement {
+        font-size: clamp(2.0rem, 4.5vw, 3.6rem);
+        line-height: 1.1;
+      }
+      .finale-monumental-text {
+        font-size: clamp(2.8rem, 6.8vw, 5.2rem);
+        line-height: 0.94;
+        word-break: break-word;
+      }
+      .work-media {
+        height: 340px;
+      }
+      .hero-viewport {
+        min-height: auto;
+        padding: 0;
+        display: block;
+      }
+      .hero-center-stage {
+        min-height: calc(100dvh - 80px);
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+        padding: 40px clamp(20px, 4vw, 40px) 24px clamp(20px, 4vw, 40px);
+        gap: 36px;
+        margin: 0;
+        box-sizing: border-box;
+      }
+      .deck-anchor {
+        --card-w: min(54vw, 310px);
+        --fan: 34px;
+        width: calc(var(--card-w) + var(--fan) * 2.3);
+        height: calc(var(--card-w) / 0.74);
+        margin: 20px auto 0 auto;
+        justify-self: center;
+        align-self: center;
+      }
+      .deck-orbit-glow {
+        inset: -40px -20px -40px -40px;
+      }
+      .orbit-ring {
+        width: 440px;
+        height: 440px;
+        left: -25px;
+        top: -15px;
+      }
+      .hero-feature-quad {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 22px;
+        padding: 56px clamp(20px, 4vw, 40px) 60px clamp(20px, 4vw, 40px);
+        border-top: 1px solid rgba(255, 255, 255, 0.08);
+      }
+      .cap-row {
+        grid-template-columns: 50px 1.5fr 2fr;
+        padding: 24px 12px;
+      }
+      .cap-heading {
+        font-size: 1.55rem;
+      }
+      .cap-arrow {
+        display: none;
+      }
+      .work-grid {
+        grid-template-columns: 1fr;
+        gap: 32px;
+      }
+      .finder-tabs {
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+      .finder-tab {
+        font-size: 0.82rem;
+        padding: 10px 18px;
+      }
+    }
+
+    @media (max-width: 920px) {
+      .nav-pill-cluster {
+        display: none;
+      }
+    }
+
+    @media (max-width: 768px) {
+      section[id],
+      .hero-viewport,
+      .section-container,
+      .editorial-section,
+      footer[id] {
+        scroll-margin-top: 60px;
+      }
+      .nav-pill-cluster {
+        display: none;
+      }
+      header.studio-nav {
+        padding: 11px 16px;
+      }
+      .brand-mark {
+        font-size: 1.15rem;
+      }
+      .nav-actions-group {
+        gap: 8px;
+      }
+      .btn-action-pill {
+        font-size: 0.68rem;
+        padding: 5px 12px;
+        gap: 3px;
+      }
+      .nav-sidebar-toggle-btn {
+        width: 32px;
+        height: 32px;
+      }
+      .nav-sidebar-toggle-btn .toggle-bar {
+        width: 14px;
+      }
+      .nav-sidebar-toggle-btn .toggle-bar:nth-child(2) {
+        width: 9px;
+        margin-left: 9px;
+      }
+      .master-shell {
+        padding-top: 54px;
+      }
+
+      /* HERO SECTION 100VH ON MOBILE: ONLY HERO CONTENT IN INITIAL VIEWPORT */
+      .hero-viewport {
+        padding: 0;
+        min-height: auto;
+        display: block;
+      }
+      .hero-center-stage {
+        min-height: calc(100dvh - 60px);
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+        padding: clamp(34px, 8vw, 48px) 18px 20px 18px;
+        gap: clamp(20px, 4vw, 26px);
+        margin: 0;
+        box-sizing: border-box;
+      }
+      .hero-title-scaffold {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+        width: 100%;
+      }
+      .hero-eyebrow {
+        display: inline-flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 2px;
+      }
+      .hero-eyebrow-line {
+        width: 26px;
+        height: 1.5px;
+        background: rgba(255, 255, 255, 0.65);
+      }
+      .hero-eyebrow-text {
+        font-size: 0.78rem;
+        letter-spacing: 0.16em;
+        font-weight: 600;
+        color: rgba(255, 255, 255, 0.75);
+      }
+      .headline-monument {
+        font-size: clamp(2.8rem, 11.5vw, 3.6rem);
+        line-height: 0.92;
+        letter-spacing: -0.035em;
+      }
+      .hero-lead {
+        font-size: clamp(0.92rem, 3.2vw, 1.02rem);
+        line-height: 1.64;
+        max-width: 44ch;
+        color: #8e95a0;
+      }
+      .hero-cta-cluster {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        margin-top: 6px;
+        flex-wrap: nowrap;
+      }
+      .btn-primary-hero {
+        font-size: 0.78rem;
+        padding: 11px 18px;
+        letter-spacing: 0.04em;
+        white-space: nowrap;
+      }
+      .btn-watch-work {
+        font-size: 0.88rem;
+        gap: 10px;
+        white-space: nowrap;
+      }
+      .watch-play-circle {
+        width: 38px;
+        height: 38px;
+        flex-shrink: 0;
+      }
+      .deck-orbit-glow {
+        display: none;
+      }
+
+      /* Card Deck Positioned Below CTAs in 100vh */
+      .deck-anchor {
+        --card-w: min(68vw, 245px);
+        --fan: 16px;
+        width: calc(var(--card-w) + var(--fan) * 2.2);
+        height: calc(var(--card-w) / 0.74);
+        margin: 14px auto 0 auto;
+        justify-self: center;
+        align-self: center;
+      }
+      .deck-card {
+        border-radius: 20px;
+      }
+
+      /* Card 04 Micro-scaling on Mobile */
+      .card-mechanical-face {
+        padding: 18px 15px;
+        border-radius: 20px;
+      }
+      .card-mechanical-top,
+      .card-mechanical-bottom {
+        font-size: 0.7rem;
+      }
+      .card-mechanical-body {
+        gap: 11px;
+        padding: 6px 0;
+      }
+      .eng-chip {
+        padding: 11px 14px;
+        border-radius: 14px;
+        gap: 6px;
+      }
+      .eng-chip-title {
+        font-size: 0.88rem;
+      }
+      .eng-chip-sub,
+      .eng-chip-tech {
+        font-size: 0.7rem;
+      }
+      .eng-icon-github {
+        width: 17px;
+        height: 17px;
+      }
+      .eng-badge-js {
+        width: 21px;
+        height: 21px;
+        font-size: 0.65rem;
+      }
+      .eng-check-icon {
+        width: 14px;
+        height: 14px;
+      }
+      .eng-chip-backend {
+        transform: rotate(-3deg) translate(-2px, -2px);
+        width: 90%;
+      }
+      .eng-chip-frontend {
+        transform: rotate(-2deg) translate(12px, 2px);
+        width: 92%;
+      }
+
+      /* 4-COLUMN FEATURE STRIP: PUSHED COMPLETELY BELOW 100VH */
+      .hero-feature-quad {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 16px;
+        margin-top: 36px;
+        padding: 56px 18px 64px 18px;
+        border-top: 1px solid rgba(255, 255, 255, 0.08);
+        background: rgba(10, 11, 13, 0.85);
+      }
+      .hero-feature-item {
+        gap: 12px;
+      }
+      .feature-icon-box {
+        width: 44px;
+        height: 44px;
+        border-radius: 12px;
+      }
+      .feature-icon-box svg {
+        width: 20px;
+        height: 20px;
+      }
+      .feature-title {
+        font-size: 0.86rem;
+        line-height: 1.25;
+      }
+      .feature-sub {
+        font-size: 0.72rem;
+        line-height: 1.35;
+      }
+
+      /* Sections & Typography on Mobile */
+      .editorial-section,
+      .section-container {
+        padding: 48px 16px;
+      }
+      .editorial-header-wrap,
+      .section-header {
+        margin-bottom: 26px;
+        gap: 10px;
+      }
+      .editorial-main-title,
+      .section-heading {
+        font-size: clamp(1.35rem, 5.4vw, 2.0rem);
+        line-height: 1.1;
+        letter-spacing: -0.025em;
+        word-break: break-word;
+        hyphens: auto;
+      }
+      .editorial-statement,
+      .section-desc {
+        font-size: 0.88rem;
+        line-height: 1.5;
+      }
+
+      /* Work Section on Mobile */
+      .work-grid {
+        gap: 22px;
+        margin-top: 24px;
+      }
+      .work-media {
+        height: 220px;
+        border-radius: 12px;
+      }
+      .work-title {
+        font-size: 1.3rem;
+      }
+      .work-desc {
+        font-size: 0.85rem;
+        line-height: 1.48;
+      }
+
+      /* Capabilities Section on Mobile */
+      .capabilities-index {
+        border-bottom: 1px solid var(--canvas-border);
+      }
+      .cap-row {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 6px;
+        padding: 18px 4px;
+      }
+      .cap-num {
+        font-size: 0.72rem;
+        color: var(--accent-emerald);
+      }
+      .cap-heading {
+        font-size: 1.25rem;
+      }
+      .cap-details {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 5px;
+      }
+      .cap-tag {
+        padding: 2px 7px;
+        font-size: 0.68rem;
+      }
+      .cap-arrow {
+        display: none;
+      }
+
+      /* Manifesto Section on Mobile */
+      .monument-statement-wrap {
+        padding: 50px 16px;
+      }
+      .monument-statement {
+        font-size: clamp(1.2rem, 4.8vw, 1.75rem);
+        line-height: 1.25;
+        margin-bottom: 18px;
+        text-wrap: balance;
+        padding: 0 8px;
+      }
+      .manifesto-flow {
+        gap: 6px 10px;
+        font-size: 0.78rem;
+        margin-top: 20px;
+      }
+
+      /* Diagnostic Engine on Mobile */
+      .finder-tabs {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        width: 100%;
+      }
+      .finder-tab {
+        width: 100%;
+        text-align: left;
+        padding: 11px 14px;
+        font-size: 0.78rem;
+        border-radius: 10px;
+        line-height: 1.35;
+      }
+      .finder-result {
+        padding: 16px 12px;
+        border-radius: 12px;
+      }
+      .finder-result .result-title {
+        font-size: 1.15rem;
+      }
+      .finder-result a.btn,
+      .finder-result .btn-action {
+        width: 100%;
+        justify-content: center;
+        font-size: 0.74rem;
+        padding: 9px 12px;
+        text-align: center;
+      }
+
+      /* Process Section on Mobile */
+      .levels-grid {
+        grid-template-columns: 1fr;
+        gap: 10px;
+      }
+      .level-card {
+        padding: 14px 12px;
+      }
+      .method-node {
+        padding: 16px 12px;
+      }
+
+      /* Technology Radar on Mobile */
+      .radar-wrapper {
+        padding: 8px 0;
+      }
+      .radar-active-detail {
+        padding: 14px 12px;
+        font-size: 0.82rem;
+      }
+
+      /* Contact / Intake Wizard on Mobile */
+      .wizard-container {
+        padding: 20px 14px;
+        border-radius: 12px;
+      }
+      .wizard-progress-bar {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        margin-bottom: 20px;
+        padding-bottom: 12px;
+        overflow-x: auto;
+      }
+      .progress-step-pill {
+        padding: 4px 6px;
+        font-size: 0.68rem;
+        gap: 3px;
+        flex: 1 1 auto;
+        justify-content: center;
+      }
+      .progress-step-pill:not(.active) span:not(.step-circle) {
+        display: none;
+      }
+      .step-circle {
+        width: 18px;
+        height: 18px;
+        font-size: 0.65rem;
+      }
+      .step-question-title {
+        font-size: clamp(1.1rem, 4.2vw, 1.3rem);
+        line-height: 1.3;
+        letter-spacing: -0.01em;
+        text-wrap: balance;
+      }
+      .step-question-desc {
+        font-size: 0.82rem;
+        line-height: 1.45;
+      }
+      .tiles-grid {
+        grid-template-columns: 1fr;
+        gap: 8px;
+      }
+      .selection-tile {
+        padding: 12px 14px;
+      }
+      .inquiry-input {
+        padding: 10px 12px;
+        font-size: 0.85rem;
+      }
+      .btn-next,
+      .btn-prev {
+        padding: 9px 14px;
+        font-size: 0.78rem;
+      }
+
+      /* Footer on Mobile */
+      footer.studio-finale {
+        padding: 48px 16px 28px 16px;
+      }
+      .finale-monumental-text {
+        font-size: clamp(1.8rem, 7.8vw, 2.8rem);
+        line-height: 0.98;
+        margin-bottom: 24px;
+        word-break: break-word;
+      }
+      .direct-mail {
+        font-size: clamp(1.15rem, 4.8vw, 1.65rem);
+        word-break: break-all;
+      }
+      .finale-contact-row {
+        padding-top: 24px;
+        gap: 16px;
+      }
+      .finale-social-cluster {
+        gap: 8px 14px;
+        font-size: 0.68rem;
+      }
+      .finale-bottom-meta {
+        flex-direction: column;
+        gap: 8px;
+        margin-top: 28px;
+        font-size: 0.68rem;
+      }
+
+      /* Case Drawer on Mobile */
+      .case-drawer-topbar {
+        height: 50px !important;
+        min-height: 50px !important;
+        padding: 0 12px !important;
+      }
+      .case-drawer-back-btn {
+        padding: 5px 11px !important;
+        font-size: 0.7rem !important;
+      }
+      .case-drawer-back-btn .key-pill {
+        display: none !important;
+      }
+      .case-nav-switcher {
+        display: none !important;
+      }
+      .case-live-link {
+        padding: 5px 12px !important;
+        font-size: 0.7rem !important;
+        gap: 6px !important;
+      }
+      .case-drawer-x-btn {
+        width: 30px !important;
+        height: 30px !important;
+        font-size: 0.72rem !important;
+      }
+      .case-drawer-layout {
+        padding: 16px 14px 44px 14px !important;
+        gap: 20px !important;
+      }
+      .case-sidebar-title {
+        font-size: 1.4rem !important;
+      }
+      .case-sidebar-sub {
+        font-size: 0.82rem !important;
+      }
+      .case-hero-media-wrap {
+        height: 210px !important;
+        border-radius: 12px !important;
+      }
+      .case-metrics-grid {
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 8px !important;
+      }
+      .case-metric-card {
+        padding: 12px 10px !important;
+      }
+      .metric-val {
+        font-size: 1.25rem !important;
+      }
+      .metric-label {
+        font-size: 0.68rem !important;
+      }
+      .metric-sub {
+        font-size: 0.65rem !important;
+      }
+      .case-bottom-nav {
+        grid-template-columns: 1fr !important;
+        gap: 10px !important;
+      }
+      .case-bottom-btn.next {
+        text-align: left !important;
+      }
+
+      /* Sidenav Drawer on Mobile */
+      .nav-drawer {
+        width: 100vw !important;
+        border-left: none !important;
+      }
+      .drawer-header {
+        padding: 16px 18px !important;
+      }
+      .drawer-content {
+        padding: 16px 18px 24px 18px !important;
+        gap: 20px !important;
+      }
+      .drawer-link {
+        padding: 10px 12px !important;
+      }
+      .drawer-link-title {
+        font-size: 1.15rem !important;
+      }
+
+      /* Floating Directory Trigger on Mobile - sleek bottom-right pill */
+      .floating-dir-trigger {
+        top: auto;
+        bottom: 20px;
+        right: 14px;
+        transform: none;
+        writing-mode: horizontal-tb;
+        border-radius: 9999px;
+        padding: 8px 14px;
+        background: rgba(18, 20, 24, 0.94);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border: 1px solid rgba(255, 255, 255, 0.18);
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
+        font-size: 0.68rem;
+        letter-spacing: 0.08em;
+        z-index: 999;
+      }
+    }
+
+    @media (max-width: 380px) {
+      .headline-monument {
+        font-size: clamp(2.3rem, 10.5vw, 2.9rem);
+      }
+      .hero-center-stage {
+        --card-w: min(72vw, 225px);
+        --fan: 14px;
+        padding-left: 12px;
+        padding-right: 12px;
+      }
+      .hero-cta-cluster {
+        gap: 10px;
+      }
+      .btn-primary-hero {
+        font-size: 0.74rem;
+        padding: 10px 14px;
+      }
+      .btn-watch-work {
+        font-size: 0.82rem;
+        gap: 8px;
+      }
+      .hero-feature-quad {
+        grid-template-columns: 1fr;
+        gap: 12px;
+      }
+    }
+  </style>
+<body>
+
+  <!-- LUXURY KINETIC OPENING SCREEN: ONLY CODDEN -->
+  <div class="opening-curtain" id="openingCurtain">
+    <div class="loader-brand-box">
+      <span class="brand-char" style="--char-delay: 0.04s;">C</span>
+      <span class="brand-char" style="--char-delay: 0.09s;">O</span>
+      <span class="brand-char" style="--char-delay: 0.14s;">D</span>
+      <span class="brand-char" style="--char-delay: 0.19s;">D</span>
+      <span class="brand-char" style="--char-delay: 0.24s;">E</span>
+      <span class="brand-char" style="--char-delay: 0.29s;">N</span>
+    </div>
+  </div>
+
+  <!-- Master Obsidian Shell -->
+  <div class="master-shell">
+    
+    <!-- LUXURY ARCHITECTURAL SIDE NAVIGATION DRAWER -->
+    <div class="nav-drawer" id="navDrawer" role="dialog" aria-modal="true" aria-label="Navigation Menu">
+      <div class="drawer-header">
+        <a href="#hero" class="drawer-brand" aria-label="Codden Home">
+          <span>CODDEN</span>
+          <span class="brand-status-dot"></span>
+        </a>
+        <button class="drawer-close-btn" id="drawerClose" aria-label="Close Navigation" title="Close Menu">✕</button>
+      </div>
+
+      <div class="drawer-content">
+        <nav class="drawer-nav-menu">
+          <a href="#hero" class="drawer-link active" data-nav="00">
+            <span class="drawer-link-num">00</span>
+            <span class="drawer-link-title">Home</span>
+            <span class="drawer-link-arrow">↗</span>
+          </a>
+          <a href="#work" class="drawer-link" data-nav="01">
+            <span class="drawer-link-num">01</span>
+            <span class="drawer-link-title">Selected Work</span>
+            <span class="drawer-link-arrow">↗</span>
+          </a>
+          <a href="#services" class="drawer-link" data-nav="02">
+            <span class="drawer-link-num">02</span>
+            <span class="drawer-link-title">Capabilities</span>
+            <span class="drawer-link-arrow">↗</span>
+          </a>
+          <a href="#solutions" class="drawer-link" data-nav="03">
+            <span class="drawer-link-num">03</span>
+            <span class="drawer-link-title">Architecture</span>
+            <span class="drawer-link-arrow">↗</span>
+          </a>
+          <a href="#process" class="drawer-link" data-nav="04">
+            <span class="drawer-link-num">04</span>
+            <span class="drawer-link-title">Process</span>
+            <span class="drawer-link-arrow">↗</span>
+          </a>
+          <a href="#technology" class="drawer-link" data-nav="05">
+            <span class="drawer-link-num">05</span>
+            <span class="drawer-link-title">Technology</span>
+            <span class="drawer-link-arrow">↗</span>
+          </a>
+          <a href="#about" class="drawer-link" data-nav="06">
+            <span class="drawer-link-num">06</span>
+            <span class="drawer-link-title">About Studio</span>
+            <span class="drawer-link-arrow">↗</span>
+          </a>
+          <a href="#insights" class="drawer-link" data-nav="07">
+            <span class="drawer-link-num">07</span>
+            <span class="drawer-link-title">Perspectives</span>
+            <span class="drawer-link-arrow">↗</span>
+          </a>
+        </nav>
+
+        <div class="drawer-footer-block">
+          <a href="#contact" class="drawer-cta-pill">
+            <span>START A PROJECT</span>
+            <span>↗</span>
+          </a>
+
+          <div class="drawer-contact-mini">
+            <span class="drawer-contact-label">Direct Channel</span>
+            <a href="mailto:hello@codden.tech" class="drawer-contact-email">hello@codden.tech</a>
+          </div>
+
+          <div class="drawer-meta-line">
+            <span>Independent Technology Atelier</span>
+            <span>© 2026</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 00. GLOBAL NAVIGATION -->
+    <header class="studio-nav">
+      <a href="#hero" class="brand-mark">
+        <span>CODDEN</span>
+        <span class="brand-status-dot"></span>
+      </a>
+
+      <nav class="nav-pill-cluster">
+        <a href="#work" class="nav-pill-item">Work</a>
+        <a href="#services" class="nav-pill-item">Services</a>
+        <a href="#solutions" class="nav-pill-item">Solutions</a>
+        <a href="#process" class="nav-pill-item">Process</a>
+        <a href="#technology" class="nav-pill-item">Technology</a>
+        <a href="#about" class="nav-pill-item">About</a>
+        <a href="#insights" class="nav-pill-item">Insights</a>
+      </nav>
+
+      <div class="nav-actions-group">
+        <a href="#contact" class="btn-action-pill">START A PROJECT ↗</a>
+        <button class="nav-sidebar-toggle-btn open-directory-btn" id="menuToggle" aria-label="Open directory side navigation" title="Open Directory (Menu)">
+          <span class="toggle-bar"></span>
+          <span class="toggle-bar"></span>
+        </button>
+      </div>
+    </header>
+
+    <!-- 00. HERO VIEWPORT -->
+    <section class="hero-viewport" id="hero">
+      
+      <div class="hero-center-stage" id="heroStage">
+        
+        <!-- Large Architectural Headline & Content -->
+        <div class="hero-title-scaffold">
+          <div class="hero-eyebrow">
+            <span class="hero-eyebrow-line"></span>
+            <span class="hero-eyebrow-text">DIGITAL ENGINEERING STUDIO</span>
+          </div>
+
+          <h1 class="headline-monument">
+            <span class="line"><span class="headline-white" style="--line-delay: 0s;">WE BUILD</span></span>
+            <span class="line"><span class="headline-gradient" style="--line-delay: 0.12s;">DIGITAL</span></span>
+          </h1>
+
+          <p class="hero-lead">From futuristic platforms that scale to millions to enchanting digital habitats, we are driven by a passion for technical rigor and architectural distinction.</p>
+
+          <div class="hero-cta-cluster">
+            <a href="#contact" class="btn-primary-hero">
+              <span>START A PROJECT</span>
+              <span class="btn-arrow-icon">↗</span>
+            </a>
+            <a href="#work" class="btn-watch-work">
+              <span class="watch-play-circle">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
+                  <polygon points="6 3 20 12 6 21 6 3"></polygon>
+                </svg>
+              </span>
+              <span class="watch-label">Watch our work</span>
+            </a>
+          </div>
+        </div>
+
+        <!-- Physical 3D Editorial Card Deck with Motion Frames & Ambient Orbit -->
+        <div class="deck-anchor" id="deckAnchor" title="Click or scroll to cycle motion frames">
+          
+          <!-- Glowing Orbit Ring behind deck -->
+          <div class="deck-orbit-glow" aria-hidden="true">
+            <div class="orbit-glow-spot"></div>
+            <div class="orbit-ring">
+              <div class="orbit-node"></div>
+            </div>
+          </div>
+
+          <div class="deck-tilt-container" id="deckTilt">
+            
+            <!-- Frame 04: Mechanical Engineering (Front Card) -->
+            <div class="deck-card pos-0" data-index="0" data-case="rideflow" style="cursor: pointer;" title="Click to view full case study">
+              <div class="card-mechanical-face">
+                <div class="card-mechanical-top">
+                  <span>— / 04</span>
+                </div>
+
+                <div class="card-mechanical-body">
+                  <!-- Floating Glass Tile: Backend -->
+                  <div class="eng-chip eng-chip-backend">
+                    <div class="eng-chip-header">
+                      <svg class="eng-icon-github" width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/>
+                      </svg>
+                      <span class="eng-chip-title">Backend</span>
+                    </div>
+                    <div class="eng-chip-status">
+                      <span class="eng-check-icon">
+                        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                          <polyline points="20 6 9 17 4 12"></polyline>
+                        </svg>
+                      </span>
+                      <span class="eng-chip-sub">Just now via GitHub</span>
+                    </div>
+                  </div>
+
+                  <!-- Floating Glass Tile: Frontend -->
+                  <div class="eng-chip eng-chip-frontend">
+                    <div class="eng-chip-header">
+                      <span class="eng-badge-js">JS</span>
+                      <div class="eng-title-group">
+                        <span class="eng-chip-title">Frontend</span>
+                        <span class="eng-chip-tech">TypeScript + React</span>
+                      </div>
+                    </div>
+                    <div class="eng-chip-status">
+                      <span class="eng-check-icon">
+                        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                          <polyline points="20 6 9 17 4 12"></polyline>
+                        </svg>
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="card-mechanical-bottom">
+                  <span>MECHANICAL</span>
+                  <span>4K • 60FPS</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Frame 01: Superlist OS (Card 2) -->
+            <div class="deck-card pos-1" data-index="1" data-case="aura" style="cursor: pointer;" title="Click to view full case study">
+              <div class="frame-hud">
+                <div class="frame-corner tl"></div>
+                <div class="frame-corner tr"></div>
+                <div class="frame-corner bl"></div>
+                <div class="frame-corner br"></div>
+                <div class="frame-meta-top">
+                  <span>FR // 01</span>
+                </div>
+                <div class="frame-meta-bottom">
+                  <span>TACTILE 3D</span>
+                  <span>4K • 60FPS</span>
+                </div>
+              </div>
+              <img src="assets/card1.jpg" alt="Aura OS Spatial Workspace Interface">
+            </div>
+
+            <!-- Frame 03: Landscape Showcase (Card 3) -->
+            <div class="deck-card pos-2" data-index="2" data-case="veloce" style="cursor: pointer;" title="Click to view full case study">
+              <div class="frame-hud">
+                <div class="frame-corner tl"></div>
+                <div class="frame-corner tr"></div>
+                <div class="frame-corner bl"></div>
+                <div class="frame-corner br"></div>
+                <div class="frame-meta-top">
+                  <span>FR // 03</span>
+                </div>
+                <div class="frame-meta-bottom">
+                  <span>BRUTAL SPACE</span>
+                  <span>4K • 60FPS</span>
+                </div>
+              </div>
+              <img src="assets/card3.jpg" alt="Framer Showcase Web Projects">
+            </div>
+
+            <!-- Frame 02: Apex Analytics (Card 4) -->
+            <div class="deck-card pos-3" data-index="3" data-case="apex" style="cursor: pointer;" title="Click to view full case study">
+              <div class="frame-hud">
+                <div class="frame-corner tl"></div>
+                <div class="frame-corner tr"></div>
+                <div class="frame-corner bl"></div>
+                <div class="frame-corner br"></div>
+                <div class="frame-meta-top">
+                  <span>FR // 02</span>
+                </div>
+                <div class="frame-meta-bottom">
+                  <span>PARAMETRIC</span>
+                  <span>4K • 60FPS</span>
+                </div>
+              </div>
+              <img src="assets/card2.jpg" alt="Apex Metrics Financial Analytics">
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Hero Lower Third: 4-Column Feature Strip -->
+      <div class="hero-feature-quad">
+        <div class="hero-feature-item">
+          <div class="feature-icon-box">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+              <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
+              <line x1="12" y1="22.08" x2="12" y2="12"></line>
+            </svg>
+          </div>
+          <div class="feature-text-block">
+            <h3 class="feature-title">Product Engineering</h3>
+            <p class="feature-sub">Scalable, future-ready products</p>
+          </div>
+        </div>
+
+        <div class="hero-feature-item">
+          <div class="feature-icon-box">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+              <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
+              <polyline points="2 17 12 22 22 17"></polyline>
+              <polyline points="2 12 12 17 22 12"></polyline>
+            </svg>
+          </div>
+          <div class="feature-text-block">
+            <h3 class="feature-title">Digital Platforms</h3>
+            <p class="feature-sub">For millions of users</p>
+          </div>
+        </div>
+
+        <div class="hero-feature-item">
+          <div class="feature-icon-box">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+              <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+            </svg>
+          </div>
+          <div class="feature-text-block">
+            <h3 class="feature-title">Technical Excellence</h3>
+            <p class="feature-sub">Built with rigor</p>
+          </div>
+        </div>
+
+        <div class="hero-feature-item">
+          <div class="feature-icon-box">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="3" width="7" height="7" rx="1.5"></rect>
+              <rect x="14" y="3" width="7" height="7" rx="1.5"></rect>
+              <rect x="14" y="14" width="7" height="7" rx="1.5"></rect>
+              <rect x="3" y="14" width="7" height="7" rx="1.5"></rect>
+            </svg>
+          </div>
+          <div class="feature-text-block">
+            <h3 class="feature-title">Architectural Distinction</h3>
+            <p class="feature-sub">Designs that endure</p>
+          </div>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- 01. SELECTED EDITORIAL WORK & CASE DOCUMENTARIES -->
+    <section class="portfolio-editorial" id="work">
+      
+      <div class="editorial-header-wrap">
+        <div>
+          <div class="hero-tag" style="margin-bottom: 12px;">ENGINEERED PRODUCTION CASES // 01</div>
+          <h2 class="editorial-main-title">
+            Selected <br>Cases.
+          </h2>
+        </div>
+        <p class="editorial-statement">
+          Real products engineered for scale, durability, and brand distinction. Click any case below to inspect its technical architecture and verified outcomes.
+        </p>
+      </div>
+
+      <div class="work-grid">
+        
+        <!-- Case 00: Aura OS (Flagship) -->
+        <div class="work-item tilt-card" data-case="aura">
+          <div class="work-media">
+            <img src="assets/card1.jpg" alt="Aura OS Spatial Interface">
+          </div>
+          <div class="work-meta-row">
+            <h3 class="work-title">Aura OS</h3>
+            <span class="work-meta-info">Spatial Canvas • 2026</span>
+          </div>
+          <p class="work-desc">
+            Next-generation spatial design canvas engineered in WebGL 2.0 and Rust/WASM, reducing CPU usage by 74% and sustaining locked 60fps at 25,000 active nodes.
+          </p>
+          <div style="font-family: var(--font-ui); font-size: 0.78rem; color: var(--accent-amber); font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em;">Inspect Architecture & Outcomes →</div>
+        </div>
+
+        <!-- Case 01: Rideflow -->
+        <div class="work-item tilt-card" data-case="rideflow">
+          <div class="work-media">
+            <img src="assets/card4.jpg" alt="Rideflow Mobility Platform">
+          </div>
+          <div class="work-meta-row">
+            <h3 class="work-title">Rideflow</h3>
+            <span class="work-meta-info">Mobility Platform • 2026</span>
+          </div>
+          <p class="work-desc">
+            High-concurrency urban dispatch system coordinating 120,000+ real-time passenger journeys, driver state machines, and micro-billing transactions in Go.
+          </p>
+          <div style="font-family: var(--font-ui); font-size: 0.78rem; color: var(--accent-amber); font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em;">Inspect Architecture & Outcomes →</div>
+        </div>
+
+        <!-- Case 02: NeuroLens AI -->
+        <div class="work-item tilt-card" data-case="neurolens">
+          <div class="work-media">
+            <img src="assets/card_raycast.jpg" alt="NeuroLens AI Enterprise Engine">
+          </div>
+          <div class="work-meta-row">
+            <h3 class="work-title">NeuroLens AI</h3>
+            <span class="work-meta-info">Enterprise Intelligence • 2026</span>
+          </div>
+          <p class="work-desc">
+            Autonomous multi-modal intelligence pipeline parsing high-volume regulatory filings with private Qdrant vector retrieval and automated telemetry.
+          </p>
+          <div style="font-family: var(--font-ui); font-size: 0.78rem; color: var(--accent-amber); font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em;">Inspect Architecture & Outcomes →</div>
+        </div>
+
+        <!-- Case 03: Apex Metrics -->
+        <div class="work-item tilt-card" data-case="apex">
+          <div class="work-media">
+            <img src="assets/card2.jpg" alt="Apex Metrics Financial Analytics">
+          </div>
+          <div class="work-meta-row">
+            <h3 class="work-title">Apex Metrics</h3>
+            <span class="work-meta-info">Financial Infrastructure • 2025</span>
+          </div>
+          <p class="work-desc">
+            Columnar time-series analytics engine in ClickHouse processing 100M+ daily market ticks, risk thresholds, and liquidity metrics with sub-50ms responses.
+          </p>
+          <div style="font-family: var(--font-ui); font-size: 0.78rem; color: var(--accent-amber); font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em;">Inspect Architecture & Outcomes →</div>
+        </div>
+
+      </div>
+
+    </section>
+
+    <!-- 02. EDITORIAL CAPABILITIES INDEX -->
+    <section class="editorial-section" id="services">
+      
+      <div class="editorial-header-wrap">
+        <div>
+          <div class="hero-tag" style="margin-bottom: 12px;">FULL-SPECTRUM CAPABILITIES // 02</div>
+          <h2 class="editorial-main-title">
+            Every Digital <br>Layer.
+          </h2>
+        </div>
+        <p class="editorial-statement">
+          We don't separate engineering from design. We build complete, high-concurrency systems from foundational strategy to final pixel.
+        </p>
+      </div>
+
+      <div class="capabilities-index">
+        
+        <div class="cap-row">
+          <span class="cap-num">01</span>
+          <h3 class="cap-heading">Digital Products</h3>
+          <div class="cap-details">
+            <span class="cap-tag">Web Platforms</span>
+            <span class="cap-tag">SaaS Applications</span>
+            <span class="cap-tag">Customer Portals</span>
+            <span class="cap-tag">Headless E-Commerce</span>
+          </div>
+          <div class="cap-arrow">↗</div>
+        </div>
+
+        <div class="cap-row">
+          <span class="cap-num">02</span>
+          <h3 class="cap-heading">Software Systems</h3>
+          <div class="cap-details">
+            <span class="cap-tag">Custom Enterprise ERP</span>
+            <span class="cap-tag">Distributed APIs</span>
+            <span class="cap-tag">Business Automation</span>
+            <span class="cap-tag">Cloud Infrastructure</span>
+          </div>
+          <div class="cap-arrow">↗</div>
+        </div>
+
+        <div class="cap-row">
+          <span class="cap-num">03</span>
+          <h3 class="cap-heading">Mobile Engineering</h3>
+          <div class="cap-details">
+            <span class="cap-tag">iOS Native (Swift)</span>
+            <span class="cap-tag">Android (Kotlin)</span>
+            <span class="cap-tag">Flutter 60fps</span>
+            <span class="cap-tag">React Native</span>
+          </div>
+          <div class="cap-arrow">↗</div>
+        </div>
+
+        <div class="cap-row">
+          <span class="cap-num">04</span>
+          <h3 class="cap-heading">Intelligence & AI</h3>
+          <div class="cap-details">
+            <span class="cap-tag">Autonomous Agents</span>
+            <span class="cap-tag">Enterprise RAG</span>
+            <span class="cap-tag">Vector Search</span>
+            <span class="cap-tag">Computer Vision</span>
+          </div>
+          <div class="cap-arrow">↗</div>
+        </div>
+
+        <div class="cap-row">
+          <span class="cap-num">05</span>
+          <h3 class="cap-heading">Design Systems</h3>
+          <div class="cap-details">
+            <span class="cap-tag">Product UI/UX</span>
+            <span class="cap-tag">Visual Brand Identity</span>
+            <span class="cap-tag">Component Tokens</span>
+            <span class="cap-tag">Interactive Prototyping</span>
+          </div>
+          <div class="cap-arrow">↗</div>
+        </div>
+
+        <div class="cap-row">
+          <span class="cap-num">06</span>
+          <h3 class="cap-heading">3D & Creative Media</h3>
+          <div class="cap-details">
+            <span class="cap-tag">WebGL & Three.js</span>
+            <span class="cap-tag">3D Product CGI</span>
+            <span class="cap-tag">Motion Identity</span>
+            <span class="cap-tag">Visual Campaigns</span>
+          </div>
+          <div class="cap-arrow">↗</div>
+        </div>
+
+        <div class="cap-row">
+          <span class="cap-num">07</span>
+          <h3 class="cap-heading">Cloud & Infrastructure</h3>
+          <div class="cap-details">
+            <span class="cap-tag">Kubernetes / Docker</span>
+            <span class="cap-tag">Multi-Region Cloud</span>
+            <span class="cap-tag">SOC2 Hardening</span>
+            <span class="cap-tag">CI/CD Automation</span>
+          </div>
+          <div class="cap-arrow">↗</div>
+        </div>
+
+      </div>
+
+    </section>
+
+    <!-- 03. MONUMENTAL STATEMENT -->
+    <section class="monument-statement-wrap" id="manifesto">
+      <h2 class="monument-statement">
+        “Code is only <span class="stone">one part</span> of what we do.”
+      </h2>
+      <div class="manifesto-flow">
+        <span>Strategy</span>
+        <span class="flow-arrow">→</span>
+        <span>Design</span>
+        <span class="flow-arrow">→</span>
+        <span>Engineering</span>
+        <span class="flow-arrow">→</span>
+        <span>Graphics</span>
+        <span class="flow-arrow">→</span>
+        <span style="color: var(--text-primary);">Experience</span>
+      </div>
+    </section>
+
+    <!-- 04. PROBLEM-FIRST DIAGNOSTIC FINDER -->
+    <section class="section-container" id="solutions">
+      <div class="section-header">
+        <div>
+          <div class="section-eyebrow">DIAGNOSTIC ENGINE // 04</div>
+          <h2 class="section-heading">Start with the problem. <br>We'll figure out the technology.</h2>
+        </div>
+        <p class="section-desc">
+          Click the scenario that best represents your commercial friction to see Codden's proven architectural recommendation and execution roadmap.
+        </p>
+      </div>
+
+      <div class="finder-container">
+        <div class="finder-tabs">
+          <button class="finder-tab active" data-target="res-automate">"We need to automate a manual process"</button>
+          <button class="finder-tab" data-target="res-launch">"We need to launch a new product"</button>
+          <button class="finder-tab" data-target="res-outdated">"Our existing product is outdated"</button>
+          <button class="finder-tab" data-target="res-presence">"We need an online presence that builds trust"</button>
+        </div>
+
+        <!-- Result 01: Automation -->
+        <div class="finder-result active" id="res-automate">
+          <div class="grid-2">
+            <div>
+              <span class="hero-tag" style="margin-bottom: 12px;">RECOMMENDED ARCHITECTURE // AUTOMATION</span>
+              <h3 style="font-size: 1.8rem; margin-bottom: 16px;">Automated Operations Backbone</h3>
+              <p style="margin-bottom: 20px;">
+                Replace manual spreadsheet entry, repetitive routing, and fragile handoffs with an asynchronous event-driven workflow engine.
+              </p>
+              <div class="card-tags">
+                <span class="card-tag">Workflow Automation</span>
+                <span class="card-tag">Internal Tools</span>
+                <span class="card-tag">API Integrations</span>
+                <span class="card-tag">Deterministic AI</span>
+              </div>
+            </div>
+            <div class="hud-corner-box">
+              <h5 style="font-family: var(--font-tech); font-size: 0.8rem; color: var(--accent-emerald); text-transform: uppercase; margin-bottom: 12px;">TYPICAL EXECUTION ROADMAP</h5>
+              <p style="font-size: 0.95rem; margin-bottom: 8px;"><strong>Phase 1 (Week 1–2):</strong> Process audit & bottleneck mapping</p>
+              <p style="font-size: 0.95rem; margin-bottom: 8px;"><strong>Phase 2 (Week 3–5):</strong> Integration pipelines & database modeling</p>
+              <p style="font-size: 0.95rem; margin-bottom: 16px;"><strong>Phase 3 (Week 6–8):</strong> Staff dashboard & automated failover testing</p>
+              <a href="#contact" class="btn-action-pill" style="width: 100%; justify-content: center;">Discuss This Automation Blueprint →</a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Result 02: Launch 0 to 1 -->
+        <div class="finder-result" id="res-launch">
+          <div class="grid-2">
+            <div>
+              <span class="hero-tag" style="margin-bottom: 12px;">RECOMMENDED ARCHITECTURE // 0 TO 1</span>
+              <h3 style="font-size: 1.8rem; margin-bottom: 16px;">Full-Lifecycle Production MVP</h3>
+              <p style="margin-bottom: 20px;">
+                Rapid 10-to-12-week build taking an unbuilt concept through technical discovery, UX design, hardened backend engineering, and multi-tenant release.
+              </p>
+              <div class="card-tags">
+                <span class="card-tag">Product Strategy</span>
+                <span class="card-tag">UI/UX Systems</span>
+                <span class="card-tag">Full-Stack Engineering</span>
+                <span class="card-tag">Cloud Infrastructure</span>
+              </div>
+            </div>
+            <div class="hud-corner-box">
+              <h5 style="font-family: var(--font-tech); font-size: 0.8rem; color: var(--accent-emerald); text-transform: uppercase; margin-bottom: 12px;">TYPICAL EXECUTION ROADMAP</h5>
+              <p style="font-size: 0.95rem; margin-bottom: 8px;"><strong>Phase 1 (Week 1–3):</strong> User flows, wireframes & tech specs</p>
+              <p style="font-size: 0.95rem; margin-bottom: 8px;"><strong>Phase 2 (Week 4–8):</strong> Core engineering, auth, API & database</p>
+              <p style="font-size: 0.95rem; margin-bottom: 16px;"><strong>Phase 3 (Week 9–11):</strong> QA, security review & production rollout</p>
+              <a href="#contact" class="btn-action-pill" style="width: 100%; justify-content: center;">Plan Your Product Launch →</a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Result 03: Modernization -->
+        <div class="finder-result" id="res-outdated">
+          <div class="grid-2">
+            <div>
+              <span class="hero-tag" style="margin-bottom: 12px;">RECOMMENDED ARCHITECTURE // MODERNIZATION</span>
+              <h3 style="font-size: 1.8rem; margin-bottom: 16px;">Zero-Downtime Strangler Rebuild</h3>
+              <p style="margin-bottom: 20px;">
+                Gradually replace fragile legacy code with modern micro-services while the live business continues operating without disruption.
+              </p>
+              <div class="card-tags">
+                <span class="card-tag">Code Audit</span>
+                <span class="card-tag">Database Migration</span>
+                <span class="card-tag">Modern Frontend</span>
+                <span class="card-tag">Performance Tuning</span>
+              </div>
+            </div>
+            <div class="hud-corner-box">
+              <h5 style="font-family: var(--font-tech); font-size: 0.8rem; color: var(--accent-emerald); text-transform: uppercase; margin-bottom: 12px;">TYPICAL EXECUTION ROADMAP</h5>
+              <p style="font-size: 0.95rem; margin-bottom: 8px;"><strong>Phase 1 (Week 1–2):</strong> Legacy code audit & strangler boundary</p>
+              <p style="font-size: 0.95rem; margin-bottom: 8px;"><strong>Phase 2 (Week 3–7):</strong> Core service rewrite & dual-write syncing</p>
+              <p style="font-size: 0.95rem; margin-bottom: 16px;"><strong>Phase 3 (Week 8–10):</strong> Live cutover, load testing & decommission</p>
+              <a href="#contact" class="btn-action-pill" style="width: 100%; justify-content: center;">Discuss Strangler Migration →</a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Result 04: Brand Presence -->
+        <div class="finder-result" id="res-presence">
+          <div class="grid-2">
+            <div>
+              <span class="hero-tag" style="margin-bottom: 12px;">RECOMMENDED ARCHITECTURE // DIGITAL ATELIER</span>
+              <h3 style="font-size: 1.8rem; margin-bottom: 16px;">High-Authority Flagship Experience</h3>
+              <p style="margin-bottom: 20px;">
+                Elevate your commercial perception with a bespoke WebGL, ultra-motion web presence that builds investor trust and consumer desire.
+              </p>
+              <div class="card-tags">
+                <span class="card-tag">Brand Identity</span>
+                <span class="card-tag">Interactive WebGL</span>
+                <span class="card-tag">Motion Engineering</span>
+                <span class="card-tag">Sub-100ms LCP</span>
+              </div>
+            </div>
+            <div class="hud-corner-box">
+              <h5 style="font-family: var(--font-tech); font-size: 0.8rem; color: var(--accent-emerald); text-transform: uppercase; margin-bottom: 12px;">TYPICAL EXECUTION ROADMAP</h5>
+              <p style="font-size: 0.95rem; margin-bottom: 8px;"><strong>Phase 1 (Week 1–2):</strong> Brand positioning & 3D asset modeling</p>
+              <p style="font-size: 0.95rem; margin-bottom: 8px;"><strong>Phase 2 (Week 3–5):</strong> Creative motion prototyping & shader dev</p>
+              <p style="font-size: 0.95rem; margin-bottom: 16px;"><strong>Phase 3 (Week 6–8):</strong> Full-device QA, edge CDN routing & launch</p>
+              <a href="#contact" class="btn-action-pill" style="width: 100%; justify-content: center;">Build Your Digital Flagship →</a>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- 05. 7-PHASE LIFECYCLE & 5 ENGAGEMENT MATURITY LEVELS -->
+    <section class="section-container" id="process">
+      <div class="section-header">
+        <div>
+          <div class="section-eyebrow">ENGINEERING DISCIPLINE // 05</div>
+          <h2 class="section-heading">Good products are built <br>through a process.</h2>
+        </div>
+        <p class="section-desc">
+          Software projects do not fail from lack of code; they fail from ambiguous scope and absent architectural planning. Our 7-phase discipline guarantees predictable execution from raw idea to scale.
+        </p>
+      </div>
+
+      <div class="timeline-wrapper">
+        
+        <!-- Phase 1 -->
+        <div class="timeline-node">
+          <div class="timeline-marker"></div>
+          <span class="phase-badge">PHASE // 01</span>
+          <h3 class="phase-title">Discovery</h3>
+          <p class="phase-desc">
+            We interrogate the product requirement: What are we building? Who is it for? What critical business problem does it solve? What are the non-negotiable performance constraints?
+          </p>
+          <div class="deliverables-box">
+            <h5>Verified Deliverables</h5>
+            <div class="deliverables-list">
+              <span class="deliv-item">Documented Requirements Spec</span>
+              <span class="deliv-item">User Personas & Edge Cases</span>
+              <span class="deliv-item">Initial Architecture Blueprint</span>
+              <span class="deliv-item">Technical Feasibility Audit</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Phase 2 -->
+        <div class="timeline-node">
+          <div class="timeline-marker"></div>
+          <span class="phase-badge">PHASE // 02</span>
+          <h3 class="phase-title">Planning & Architecture</h3>
+          <p class="phase-desc">
+            Mapping milestones, selecting production technologies, defining data models, and establishing sprint cadences with zero speculative scope.
+          </p>
+          <div class="deliverables-box">
+            <h5>Verified Deliverables</h5>
+            <div class="deliverables-list">
+              <span class="deliv-item">Entity-Relationship Schemas</span>
+              <span class="deliv-item">Sprint Milestone Schedule</span>
+              <span class="deliv-item">API Contract Definitions</span>
+              <span class="deliv-item">DevOps Infrastructure Plan</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Phase 3 -->
+        <div class="timeline-node">
+          <div class="timeline-marker"></div>
+          <span class="phase-badge">PHASE // 03</span>
+          <h3 class="phase-title">Design & Prototyping</h3>
+          <p class="phase-desc">
+            Translating complex user workflows into intuitive visual hierarchies. We build high-fidelity interactive prototypes to validate interactions before expensive code implementation.
+          </p>
+          <div class="deliverables-box">
+            <h5>Verified Deliverables</h5>
+            <div class="deliverables-list">
+              <span class="deliv-item">Figma Design Token System</span>
+              <span class="deliv-item">Interactive Prototype</span>
+              <span class="deliv-item">Desktop & Mobile Layouts</span>
+              <span class="deliv-item">Micro-Interaction Specs</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Phase 4 -->
+        <div class="timeline-node">
+          <div class="timeline-marker"></div>
+          <span class="phase-badge">PHASE // 04</span>
+          <h3 class="phase-title">Engineering & Implementation</h3>
+          <p class="phase-desc">
+            Writing modular, type-safe, testable production code. Backends built for concurrency; frontends engineered for instant render cycles and zero layout shifts.
+          </p>
+          <div class="deliverables-box">
+            <h5>Verified Deliverables</h5>
+            <div class="deliverables-list">
+              <span class="deliv-item">Production-Grade Codebase</span>
+              <span class="deliv-item">Automated CI/CD Pipeline</span>
+              <span class="deliv-item">Comprehensive Unit Tests</span>
+              <span class="deliv-item">Staging Deployment URLs</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Phase 5 -->
+        <div class="timeline-node">
+          <div class="timeline-marker"></div>
+          <span class="phase-badge">PHASE // 05</span>
+          <h3 class="phase-title">Testing & Hardening</h3>
+          <p class="phase-desc">
+            Exhaustive end-to-end integration tests, load profiling, vulnerability scanning, cross-browser validation, and data security compliance checks.
+          </p>
+          <div class="deliverables-box">
+            <h5>Verified Deliverables</h5>
+            <div class="deliverables-list">
+              <span class="deliv-item">Load & Concurrency Benchmarks</span>
+              <span class="deliv-item">Penetration & Security Audit</span>
+              <span class="deliv-item">Cross-Device QA Reports</span>
+              <span class="deliv-item">Regression Test Pass</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Phase 6 -->
+        <div class="timeline-node">
+          <div class="timeline-marker"></div>
+          <span class="phase-badge">PHASE // 06</span>
+          <h3 class="phase-title">Deployment & Launch</h3>
+          <p class="phase-desc">
+            Zero-downtime blue/green cutover to multi-region cloud infrastructure, DNS propagation, SSL/TLS validation, and real-time observability telemetry.
+          </p>
+          <div class="deliverables-box">
+            <h5>Verified Deliverables</h5>
+            <div class="deliverables-list">
+              <span class="deliv-item">Multi-Region Cloud Deployment</span>
+              <span class="deliv-item">Real-Time Sentry / APM Logging</span>
+              <span class="deliv-item">Full Architecture Documentation</span>
+              <span class="deliv-item">Automated Database Backups</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Phase 7 -->
+        <div class="timeline-node">
+          <div class="timeline-marker"></div>
+          <span class="phase-badge">PHASE // 07</span>
+          <h3 class="phase-title">Growth & Evolution</h3>
+          <p class="phase-desc">
+            Software is a living asset. We analyze production telemetry, optimize bottlenecks, roll out incremental feature enhancements, and scale server infrastructure.
+          </p>
+          <div class="deliverables-box">
+            <h5>Verified Deliverables</h5>
+            <div class="deliverables-list">
+              <span class="deliv-item">Monthly Reliability Reviews</span>
+              <span class="deliv-item">Feature Iteration Sprints</span>
+              <span class="deliv-item">Cloud Cost Optimization</span>
+              <span class="deliv-item">Dedicated Architect Retainer</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Project Maturity Levels -->
+      <div style="margin-top: 100px;">
+        <div class="section-header">
+          <div>
+            <div class="section-eyebrow">ENGAGEMENT ARCHITECTURE</div>
+            <h3 class="section-heading" style="font-size: 2.8rem;">Project maturity levels.</h3>
+          </div>
+          <p class="section-desc">
+            Not every business arrives at the same stage. We structure our collaboration around your actual project maturity rather than arbitrary sales tiers.
+          </p>
+        </div>
+
+        <div class="levels-grid">
+          <!-- Level 01 -->
+          <div class="level-card">
+            <span class="level-num">LEVEL // 01</span>
+            <h4 class="level-name">IDEA</h4>
+            <p class="level-target">Early-stage concepts, unvalidated ideas, new digital products.</p>
+            <ul class="level-list">
+              <li>• Problem Discovery</li>
+              <li>• Feasibility Analysis</li>
+              <li>• Architecture Spec</li>
+              <li>• Low-Fidelity UX</li>
+            </ul>
+          </div>
+
+          <!-- Level 02 -->
+          <div class="level-card">
+            <span class="level-num">LEVEL // 02</span>
+            <h4 class="level-name">PROTOTYPE</h4>
+            <p class="level-target">Securing seed investment, partner demos, core user flow validation.</p>
+            <ul class="level-list">
+              <li>• High-Fidelity UI</li>
+              <li>• Clickable Prototype</li>
+              <li>• Core User Journeys</li>
+              <li>• Technical Roadmap</li>
+            </ul>
+          </div>
+
+          <!-- Level 03 -->
+          <div class="level-card">
+            <span class="level-num">LEVEL // 03</span>
+            <h4 class="level-name">MVP</h4>
+            <p class="level-target">First commercial release, initial paying customers, market validation.</p>
+            <ul class="level-list">
+              <li>• Full-Stack Build</li>
+              <li>• Authentication & Billing</li>
+              <li>• Core Feature Loop</li>
+              <li>• Cloud Deployment</li>
+            </ul>
+          </div>
+
+          <!-- Level 04 -->
+          <div class="level-card">
+            <span class="level-num">LEVEL // 04</span>
+            <h4 class="level-name">PRODUCTION</h4>
+            <p class="level-target">Hardened commercial platforms, multi-tenant SaaS, mission-critical tools.</p>
+            <ul class="level-list">
+              <li>• High-Availability Cloud</li>
+              <li>• RBAC & SOC2 Hardening</li>
+              <li>• Automated CI/CD</li>
+              <li>• SLA Guarantees</li>
+            </ul>
+          </div>
+
+          <!-- Level 05 -->
+          <div class="level-card">
+            <span class="level-num">LEVEL // 05</span>
+            <h4 class="level-name">SCALE</h4>
+            <p class="level-target">Scaling to millions of users, distributed microservices, global expansion.</p>
+            <ul class="level-list">
+              <li>• Microservices Split</li>
+              <li>• Multi-Region Database</li>
+              <li>• Custom AI Models</li>
+              <li>• Dedicated Pod Retainer</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- 06. INTERACTIVE ARCHITECTURE TOPOLOGY RADAR -->
+    <section class="section-container" id="technology">
+      <div class="section-header">
+        <div>
+          <div class="section-eyebrow">TOPOLOGY VISUALIZATION // 06</div>
+          <h2 class="section-heading">Interactive architecture map.</h2>
+        </div>
+        <p class="section-desc">
+          Hover or tap any cluster node below to inspect its role inside Codden's production architecture.
+        </p>
+      </div>
+
+      <div class="tech-canvas-stage">
+        <!-- SVG Interactive Node Map -->
+        <svg class="tech-svg-map" viewBox="0 0 800 500" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <!-- Connection Lines -->
+          <line x1="400" y1="250" x2="200" y2="130" stroke="rgba(255,255,255,0.15)" stroke-width="1.5" stroke-dasharray="4 4" />
+          <line x1="400" y1="250" x2="600" y2="130" stroke="rgba(255,255,255,0.15)" stroke-width="1.5" stroke-dasharray="4 4" />
+          <line x1="400" y1="250" x2="160" y2="280" stroke="rgba(255,255,255,0.15)" stroke-width="1.5" stroke-dasharray="4 4" />
+          <line x1="400" y1="250" x2="640" y2="280" stroke="rgba(255,255,255,0.15)" stroke-width="1.5" stroke-dasharray="4 4" />
+          <line x1="400" y1="250" x2="280" y2="400" stroke="rgba(255,255,255,0.15)" stroke-width="1.5" stroke-dasharray="4 4" />
+          <line x1="400" y1="250" x2="520" y2="400" stroke="rgba(255,255,255,0.15)" stroke-width="1.5" stroke-dasharray="4 4" />
+
+          <!-- Center Node: CODDEN -->
+          <g class="node-hub" data-node="codden">
+            <circle cx="400" cy="250" r="44" fill="#141618" stroke="#ffffff" stroke-width="2" />
+            <text x="400" y="254" fill="#ffffff" font-family="'Space Grotesk', monospace" font-size="12" font-weight="700" text-anchor="middle" letter-spacing="1">CODDEN</text>
+          </g>
+
+          <!-- Branch 01: FRONTEND -->
+          <g class="node-hub" data-node="frontend">
+            <circle cx="200" cy="130" r="34" fill="#181b1e" stroke="rgba(255,255,255,0.3)" stroke-width="1.5" />
+            <text x="200" y="134" fill="#94a3b8" font-family="'Space Grotesk', monospace" font-size="10" text-anchor="middle">FRONTEND</text>
+          </g>
+
+          <!-- Branch 02: BACKEND -->
+          <g class="node-hub" data-node="backend">
+            <circle cx="600" cy="130" r="34" fill="#181b1e" stroke="rgba(255,255,255,0.3)" stroke-width="1.5" />
+            <text x="600" y="134" fill="#94a3b8" font-family="'Space Grotesk', monospace" font-size="10" text-anchor="middle">BACKEND</text>
+          </g>
+
+          <!-- Branch 03: MOBILE -->
+          <g class="node-hub" data-node="mobile">
+            <circle cx="160" cy="280" r="34" fill="#181b1e" stroke="rgba(255,255,255,0.3)" stroke-width="1.5" />
+            <text x="160" y="284" fill="#94a3b8" font-family="'Space Grotesk', monospace" font-size="10" text-anchor="middle">MOBILE</text>
+          </g>
+
+          <!-- Branch 04: AI & ML -->
+          <g class="node-hub" data-node="ai">
+            <circle cx="640" cy="280" r="34" fill="#181b1e" stroke="rgba(255,255,255,0.3)" stroke-width="1.5" />
+            <text x="640" y="284" fill="#94a3b8" font-family="'Space Grotesk', monospace" font-size="10" text-anchor="middle">AI & ML</text>
+          </g>
+
+          <!-- Branch 05: DATA & STORAGE -->
+          <g class="node-hub" data-node="data">
+            <circle cx="280" cy="400" r="34" fill="#181b1e" stroke="rgba(255,255,255,0.3)" stroke-width="1.5" />
+            <text x="280" y="404" fill="#94a3b8" font-family="'Space Grotesk', monospace" font-size="10" text-anchor="middle">DATA</text>
+          </g>
+
+          <!-- Branch 06: CLOUD & DEVOPS -->
+          <g class="node-hub" data-node="cloud">
+            <circle cx="520" cy="400" r="34" fill="#181b1e" stroke="rgba(255,255,255,0.3)" stroke-width="1.5" />
+            <text x="520" y="404" fill="#94a3b8" font-family="'Space Grotesk', monospace" font-size="10" text-anchor="middle">CLOUD</text>
+          </g>
+        </svg>
+
+        <!-- Live Node Info Overlay -->
+        <div class="node-detail-overlay" id="nodeOverlay">
+          <div class="node-detail-info">
+            <h4 id="nodeTitle">CODDEN CORE ARCHITECTURE</h4>
+            <p id="nodeDesc">Central coordination layer uniting Product Strategy, Design Systems, High-Concurrency Engineering, and Cloud Infrastructure under one single responsible team.</p>
+          </div>
+          <span class="card-tag" id="nodeStatus" style="font-family: var(--font-tech); color: var(--accent-emerald);">HOVER ANY NODE TO INSPECT</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- 07. INDUSTRY DOMAINS & TECHNICAL SPECS -->
+    <section class="section-container" id="industries">
+      <div class="section-header">
+        <div>
+          <div class="section-eyebrow">DOMAINS & VERTICALS // 07</div>
+          <h2 class="section-heading">Engineering for specific realities.</h2>
+        </div>
+        <p class="section-desc">
+          Software requirements vary drastically by industry. We design systems shaped by the strict regulatory, throughput, and operational realities of specific sectors.
+        </p>
+      </div>
+
+      <div class="grid-3" style="gap: 24px;">
+        <!-- Domain 01 -->
+        <div class="domain-card tilt-card">
+          <div class="domain-header">
+            <span class="domain-badge">DOMAIN // 01</span>
+            <span class="card-tag">HIGH CONCURRENCY</span>
+          </div>
+          <h3 class="domain-title">Mobility & Logistics</h3>
+          <p class="domain-desc">
+            Real-time geospatial dispatch, dynamic pricing algorithms, low-latency driver sockets, and automated reconciliation across fleet networks.
+          </p>
+          <div class="domain-spec-list">
+            <div class="domain-spec-item"><span>Throughput SLA:</span><span>Sub-50ms Dispatch</span></div>
+            <div class="domain-spec-item"><span>Core Technologies:</span><span>Go, Redis, PostGIS, MQTT</span></div>
+          </div>
+        </div>
+
+        <!-- Domain 02 -->
+        <div class="domain-card tilt-card">
+          <div class="domain-header">
+            <span class="domain-badge">DOMAIN // 02</span>
+            <span class="card-tag">COMPLIANCE & RISK</span>
+          </div>
+          <h3 class="domain-title">FinTech & Markets</h3>
+          <p class="domain-desc">
+            High-throughput order books, immutable double-entry ledger bookkeeping, KYC/AML regulatory workflows, and bank-grade encryption at rest and in transit.
+          </p>
+          <div class="domain-spec-list">
+            <div class="domain-spec-item"><span>Compliance:</span><span>SOC2 Type II, PCI-DSS</span></div>
+            <div class="domain-spec-item"><span>Core Technologies:</span><span>Rust, ClickHouse, Kafka, AWS</span></div>
+          </div>
+        </div>
+
+        <!-- Domain 03 -->
+        <div class="domain-card tilt-card">
+          <div class="domain-header">
+            <span class="domain-badge">DOMAIN // 03</span>
+            <span class="card-tag">DATA PRIVACY</span>
+          </div>
+          <h3 class="domain-title">HealthTech & Clinical</h3>
+          <p class="domain-desc">
+            End-to-end encrypted telemetry, patient intake portals, doctor-patient video WebRTC tunnels, and HIPAA/GDPR certified cloud data compartmentalization.
+          </p>
+          <div class="domain-spec-list">
+            <div class="domain-spec-item"><span>Standards:</span><span>HIPAA, FHIR, GDPR</span></div>
+            <div class="domain-spec-item"><span>Core Technologies:</span><span>Python, PostgreSQL, WebRTC</span></div>
+          </div>
+        </div>
+
+        <!-- Domain 04 -->
+        <div class="domain-card tilt-card">
+          <div class="domain-header">
+            <span class="domain-badge">DOMAIN // 04</span>
+            <span class="card-tag">MULTI-TENANT</span>
+          </div>
+          <h3 class="domain-title">Enterprise SaaS</h3>
+          <p class="domain-desc">
+            Role-based access control (RBAC), multi-tenant schema isolation, SAML/SSO enterprise authentication, and customized white-label tenant styling.
+          </p>
+          <div class="domain-spec-list">
+            <div class="domain-spec-item"><span>Tenant Isolation:</span><span>Row-Level Security</span></div>
+            <div class="domain-spec-item"><span>Core Technologies:</span><span>Next.js, Node.js, Prisma</span></div>
+          </div>
+        </div>
+
+        <!-- Domain 05 -->
+        <div class="domain-card tilt-card">
+          <div class="domain-header">
+            <span class="domain-badge">DOMAIN // 05</span>
+            <span class="card-tag">SUB-100MS LCP</span>
+          </div>
+          <h3 class="domain-title">Headless Retail</h3>
+          <p class="domain-desc">
+            Blazing edge storefronts, instant localized checkout with Stripe Elements, real-time inventory locking, and interactive 3D product previews.
+          </p>
+          <div class="domain-spec-list">
+            <div class="domain-spec-item"><span>Performance:</span><span>99+ Google Lighthouse</span></div>
+            <div class="domain-spec-item"><span>Core Technologies:</span><span>Shopify Plus, Three.js, Vercel</span></div>
+          </div>
+        </div>
+
+        <!-- Domain 06 -->
+        <div class="domain-card tilt-card">
+          <div class="domain-header">
+            <span class="domain-badge">DOMAIN // 06</span>
+            <span class="card-tag">RAPID 10-WEEK</span>
+          </div>
+          <h3 class="domain-title">Early-Stage Startups</h3>
+          <p class="domain-desc">
+            Accelerated 0-to-1 MVP builds engineered with production-grade architecture that won't require a total rewrite after your first million users.
+          </p>
+          <div class="domain-spec-list">
+            <div class="domain-spec-item"><span>Cycle Time:</span><span>10–12 Weeks to Market</span></div>
+            <div class="domain-spec-item"><span>Core Focus:</span><span>Core Loop & Direct Founder Access</span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 08. STUDIO ORIGIN & 5 CORE BELIEFS -->
+    <section class="section-container" id="about">
+      <div class="section-header">
+        <div>
+          <div class="section-eyebrow">STUDIO PHILOSOPHY // 08</div>
+          <h2 class="section-heading">About Studio.</h2>
+        </div>
+        <p class="section-desc">
+          Codden was founded on a simple realization: the digital agency landscape is painfully divided between creative design studios that cannot write production code, and IT outsourcers that lack all design taste and product judgment. We built Codden to merge both under one roof.
+        </p>
+      </div>
+
+      <div class="grid-2" style="margin-bottom: 60px;">
+        <div class="hud-corner-box">
+          <h3 style="font-size: 1.8rem; margin-bottom: 16px;">The Codden Standard</h3>
+          <p style="margin-bottom: 16px;">
+            We are not a bloated 500-person agency with junior developers learning on your budget. We operate as an elite, high-touch engineering atelier where every member of our team is a senior contributor with proven production credentials.
+          </p>
+          <p>
+            When you build with Codden, you speak directly with the engineers authoring your architecture and the designers crafting your interface.
+          </p>
+        </div>
+        <div class="hud-corner-box">
+          <h3 style="font-size: 1.8rem; margin-bottom: 16px;">Full Intellectual Property</h3>
+          <p style="margin-bottom: 16px;">
+            We believe you should own your technology. 100% of repository code, Figma components, database schemas, and deployment credentials transfer directly to your company upon milestone completion.
+          </p>
+          <p>
+            No proprietary vendor lock-in. No hostage codebases. Total transparency.
+          </p>
+        </div>
+      </div>
+
+      <!-- 5 Core Beliefs -->
+      <div class="grid-3" style="gap: 20px;">
+        <div class="hud-corner-box">
+          <h4 style="font-family: var(--font-tech); font-size: 0.8rem; color: var(--accent-amber); margin-bottom: 10px;">BELIEF // 01</h4>
+          <h4 style="font-size: 1.25rem; margin-bottom: 10px;">Technology Should Solve Problems</h4>
+          <p style="font-size: 0.9rem; color: var(--text-secondary);">We write software to generate commercial leverage and reduce friction, not to construct artificial complexity.</p>
+        </div>
+        <div class="hud-corner-box">
+          <h4 style="font-family: var(--font-tech); font-size: 0.8rem; color: var(--accent-amber); margin-bottom: 10px;">BELIEF // 02</h4>
+          <h4 style="font-size: 1.25rem; margin-bottom: 10px;">Design Makes Complexity Clear</h4>
+          <p style="font-size: 0.9rem; color: var(--text-secondary);">The best user interface is not the one with the most elements; it is the one that makes intricate systems feel effortless.</p>
+        </div>
+        <div class="hud-corner-box">
+          <h4 style="font-family: var(--font-tech); font-size: 0.8rem; color: var(--accent-amber); margin-bottom: 10px;">BELIEF // 03</h4>
+          <h4 style="font-size: 1.25rem; margin-bottom: 10px;">Invisible Quality Matters</h4>
+          <p style="font-size: 0.9rem; color: var(--text-secondary);">Database indexing, memory garbage collection, and type-safety matter just as much as typography and color palettes.</p>
+        </div>
+        <div class="hud-corner-box">
+          <h4 style="font-family: var(--font-tech); font-size: 0.8rem; color: var(--accent-amber); margin-bottom: 10px;">BELIEF // 04</h4>
+          <h4 style="font-size: 1.25rem; margin-bottom: 10px;">Direct Collaboration Wins</h4>
+          <p style="font-size: 0.9rem; color: var(--text-secondary);">Eliminating layers of non-technical account managers saves weeks of miscommunication and ensures precision.</p>
+        </div>
+        <div class="hud-corner-box">
+          <h4 style="font-family: var(--font-tech); font-size: 0.8rem; color: var(--accent-amber); margin-bottom: 10px;">BELIEF // 05</h4>
+          <h4 style="font-size: 1.25rem; margin-bottom: 10px;">Honest Engineering Trade-offs</h4>
+          <p style="font-size: 0.9rem; color: var(--text-secondary);">Every architectural decision involves trade-offs. We transparently explain them before writing a single line of code.</p>
+        </div>
+        <div class="hud-corner-box">
+          <h4 style="font-family: var(--font-tech); font-size: 0.8rem; color: var(--accent-emerald); margin-bottom: 10px;">COMMITMENT // 06</h4>
+          <h4 style="font-size: 1.25rem; margin-bottom: 10px;">Long-Term Maintainability</h4>
+          <p style="font-size: 0.9rem; color: var(--text-secondary);">We write modular, well-documented code designed for your future internal team to inherit and scale seamlessly.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 09. TECHNICAL PERSPECTIVES & ESSAYS -->
+    <section class="section-container" id="insights">
+      <div class="section-header">
+        <div>
+          <div class="section-eyebrow">TECHNICAL PERSPECTIVES // 09</div>
+          <h2 class="section-heading">Insights & Essays.</h2>
+        </div>
+        <p class="section-desc">
+          We do not write superficial marketing listicles. We document architectural decisions, distributed system trade-offs, and lessons learned from production deployments.
+        </p>
+      </div>
+
+      <div class="grid-3" style="gap: 24px;">
+        <!-- Essay 01 -->
+        <article class="essay-card tilt-card">
+          <div class="essay-meta">
+            <span>ENGINEERING ARCHITECTURE</span>
+            <span>•</span>
+            <span>7 MIN READ</span>
+          </div>
+          <h3 class="essay-title">The Myth of the 4-Week Production MVP in 2026</h3>
+          <p class="essay-preview">
+            Why rushing a prototype directly into customer hands without data schemas, auth hardening, and rollback mechanisms guarantees technical bankruptcy within 6 months.
+          </p>
+        </article>
+
+        <!-- Essay 02 -->
+        <article class="essay-card tilt-card">
+          <div class="essay-meta">
+            <span>DISTRIBUTED SYSTEMS</span>
+            <span>•</span>
+            <span>9 MIN READ</span>
+          </div>
+          <h3 class="essay-title">Concurrency Before UI: Designing Real-Time Event Loops</h3>
+          <p class="essay-preview">
+            A deep-dive into WebSocket connection scaling, state synchronization, and race condition prevention when orchestrating tens of thousands of concurrent client actions.
+          </p>
+        </article>
+
+        <!-- Essay 03 -->
+        <article class="essay-card tilt-card">
+          <div class="essay-meta">
+            <span>APPLIED INTELLIGENCE</span>
+            <span>•</span>
+            <span>6 MIN READ</span>
+          </div>
+          <h3 class="essay-title">Pragmatic AI: Implementing RAG Without Hallucination Traps</h3>
+          <p class="essay-preview">
+            How enterprise teams can safely leverage vector embeddings and private LLM inference while maintaining deterministic source grounding and strict zero-data-retention guarantees.
+          </p>
+        </article>
+      </div>
+    </section>
+
+    <!-- 10. 6-STEP PROJECT INTAKE WIZARD -->
+    <section class="section-container" id="contact">
+      <div class="section-header">
+        <div>
+          <div class="section-eyebrow">START A BUILD // 10</div>
+          <h2 class="section-heading">Tell us what you're building.</h2>
+        </div>
+        <p class="section-desc">
+          Complete our 6-step project wizard so our senior architects can review your technical scope and prepare a tailored engineering roadmap within 24 hours.
+        </p>
+      </div>
+
+      <div class="wizard-container" id="wizardContainer">
+        
+        <!-- Progress Steps -->
+        <div class="wizard-progress-bar" id="wizardProgress">
+          <div class="progress-step-pill active" data-step="1"><span class="step-circle">1</span><span>Scope</span></div>
+          <div class="progress-step-pill" data-step="2"><span class="step-circle">2</span><span>Stage</span></div>
+          <div class="progress-step-pill" data-step="3"><span class="step-circle">3</span><span>Details</span></div>
+          <div class="progress-step-pill" data-step="4"><span class="step-circle">4</span><span>Investment</span></div>
+          <div class="progress-step-pill" data-step="5"><span class="step-circle">5</span><span>Timeline</span></div>
+          <div class="progress-step-pill" data-step="6"><span class="step-circle">6</span><span>Contact</span></div>
+        </div>
+
+        <form id="projectWizardForm" onsubmit="return false;">
+          
+          <!-- STEP 1: DELIVERABLE SCOPE -->
+          <div class="wizard-step-pane active" id="stepPane1">
+            <h3 class="step-question-title">What type of deliverable do you need?</h3>
+            <p class="step-question-desc">Select the primary discipline required for your project.</p>
+
+            <div class="tiles-grid">
+              <div class="selection-tile selected" data-field="scope" data-value="Full-Stack Web App">
+                <div class="tile-title">Web Application</div>
+                <div class="tile-sub">SaaS, portals, high-concurrency browser platforms</div>
+              </div>
+              <div class="selection-tile" data-field="scope" data-value="Mobile Application">
+                <div class="tile-title">Mobile App</div>
+                <div class="tile-sub">iOS, Android, Flutter, cross-platform native</div>
+              </div>
+              <div class="selection-tile" data-field="scope" data-value="Custom Software Systems">
+                <div class="tile-title">Software Systems</div>
+                <div class="tile-sub">Internal ERP, CRM, microservices, gRPC backends</div>
+              </div>
+              <div class="selection-tile" data-field="scope" data-value="AI & Automation">
+                <div class="tile-title">AI & Automation</div>
+                <div class="tile-sub">Private LLMs, workflow agents, vector search</div>
+              </div>
+              <div class="selection-tile" data-field="scope" data-value="Product UI/UX Design">
+                <div class="tile-title">UI/UX Design</div>
+                <div class="tile-sub">User research, design systems, interactive Figma</div>
+              </div>
+              <div class="selection-tile" data-field="scope" data-value="Creative 3D & WebGL">
+                <div class="tile-title">Creative & 3D</div>
+                <div class="tile-sub">Brand identity, motion graphics, Three.js WebGL</div>
+              </div>
+            </div>
+
+            <div class="wizard-nav-actions">
+              <span></span>
+              <button type="button" class="btn-next" onclick="goToWizardStep(2)">Next: Project Stage →</button>
+            </div>
+          </div>
+
+          <!-- STEP 2: PRODUCT STAGE -->
+          <div class="wizard-step-pane" id="stepPane2">
+            <h3 class="step-question-title">What stage is your product in?</h3>
+            <p class="step-question-desc">This helps us match the appropriate maturity level and team composition.</p>
+
+            <div class="tiles-grid">
+              <div class="selection-tile selected" data-field="stage" data-value="Idea (Early Concept)">
+                <div class="tile-title">Early Idea / Concept</div>
+                <div class="tile-sub">Raw idea requiring feasibility, discovery, and UX architecture</div>
+              </div>
+              <div class="selection-tile" data-field="stage" data-value="Prototype Validation">
+                <div class="tile-title">Prototype Validation</div>
+                <div class="tile-sub">Need a clickable high-fidelity build for investor/partner demos</div>
+              </div>
+              <div class="selection-tile" data-field="stage" data-value="New Product (0 to 1)">
+                <div class="tile-title">New Product (0 to 1)</div>
+                <div class="tile-sub">Ready to build and launch an initial commercial production release</div>
+              </div>
+              <div class="selection-tile" data-field="stage" data-value="Existing Product Rebuild">
+                <div class="tile-title">Modernize Existing Platform</div>
+                <div class="tile-sub">Replace legacy software or redesign an active product</div>
+              </div>
+            </div>
+
+            <div class="wizard-nav-actions">
+              <button type="button" class="btn-prev" onclick="goToWizardStep(1)">← Back</button>
+              <button type="button" class="btn-next" onclick="goToWizardStep(3)">Next: Project Details →</button>
+            </div>
+          </div>
+
+          <!-- STEP 3: SYNOPSIS & OBJECTIVES -->
+          <div class="wizard-step-pane" id="stepPane3">
+            <h3 class="step-question-title">Tell us about your project objectives.</h3>
+            <p class="step-question-desc">What problem are you solving? Who is it for?</p>
+
+            <div style="margin-bottom: 28px;">
+              <textarea class="inquiry-input" id="wizDesc" style="width: 100%; min-height: 160px; padding: 18px; background: var(--bg-card); border: 1px solid var(--border-subtle); color: var(--text-primary); font-family: var(--font-body); font-size: 0.95rem; line-height: 1.6; border-radius: 4px; resize: vertical;" placeholder="Briefly describe what you are building, your primary goals, and any mandatory technical requirements..."></textarea>
+            </div>
+
+            <div class="wizard-nav-actions">
+              <button type="button" class="btn-prev" onclick="goToWizardStep(2)">← Back</button>
+              <button type="button" class="btn-next" onclick="goToWizardStep(4)">Next: Investment Scope →</button>
+            </div>
+          </div>
+
+          <!-- STEP 4: INVESTMENT SCOPE -->
+          <div class="wizard-step-pane" id="stepPane4">
+            <h3 class="step-question-title">What is your planned investment budget?</h3>
+            <p class="step-question-desc">We structure architecture to maximize ROI within your capital allocation.</p>
+
+            <div class="tiles-grid">
+              <div class="selection-tile" data-field="budget" data-value="$15,000 - $25,000">
+                <div class="tile-title">$15,000 – $25,000</div>
+                <div class="tile-sub">Focused prototypes, discovery specs, design sprints</div>
+              </div>
+              <div class="selection-tile selected" data-field="budget" data-value="$25,000 - $50,000">
+                <div class="tile-title">$25,000 – $50,000</div>
+                <div class="tile-sub">Full commercial MVP build, custom web/mobile app</div>
+              </div>
+              <div class="selection-tile" data-field="budget" data-value="$50,000 - $100,000">
+                <div class="tile-title">$50,000 – $100,000</div>
+                <div class="tile-sub">Enterprise SaaS, high-concurrency systems, AI platform</div>
+              </div>
+              <div class="selection-tile" data-field="budget" data-value="$100,000+">
+                <div class="tile-title">$100,000+</div>
+                <div class="tile-sub">Multi-platform ecosystem, end-to-end digital transformation</div>
+              </div>
+            </div>
+
+            <div class="wizard-nav-actions">
+              <button type="button" class="btn-prev" onclick="goToWizardStep(3)">← Back</button>
+              <button type="button" class="btn-next" onclick="goToWizardStep(5)">Next: Target Timeline →</button>
+            </div>
+          </div>
+
+          <!-- STEP 5: TARGET TIMELINE -->
+          <div class="wizard-step-pane" id="stepPane5">
+            <h3 class="step-question-title">What is your target launch timeline?</h3>
+            <p class="step-question-desc">Helps us allocate engineering pod capacity and sprint cadences.</p>
+
+            <div class="tiles-grid">
+              <div class="selection-tile" data-field="timeline" data-value="4 - 8 Weeks">
+                <div class="tile-title">4 – 8 Weeks</div>
+                <div class="tile-sub">Rapid turnaround prototype or focused feature addition</div>
+              </div>
+              <div class="selection-tile selected" data-field="timeline" data-value="8 - 12 Weeks">
+                <div class="tile-title">8 – 12 Weeks</div>
+                <div class="tile-sub">Standard production-grade MVP lifecycle</div>
+              </div>
+              <div class="selection-tile" data-field="timeline" data-value="3 - 6 Months">
+                <div class="tile-title">3 – 6 Months</div>
+                <div class="tile-sub">Large multi-tenant system or enterprise platform</div>
+              </div>
+              <div class="selection-tile" data-field="timeline" data-value="Ongoing Retainer">
+                <div class="tile-title">Ongoing Retainer</div>
+                <div class="tile-sub">Dedicated long-term engineering and architecture pod</div>
+              </div>
+            </div>
+
+            <div class="wizard-nav-actions">
+              <button type="button" class="btn-prev" onclick="goToWizardStep(4)">← Back</button>
+              <button type="button" class="btn-next" onclick="goToWizardStep(6)">Next: Final Contact Info →</button>
+            </div>
+          </div>
+
+          <!-- STEP 6: CONTACT INFORMATION -->
+          <div class="wizard-step-pane" id="stepPane6">
+            <h3 class="step-question-title">Where should we dispatch our architectural review?</h3>
+            <p class="step-question-desc">A senior engineering director will review your submission directly within 24 business hours.</p>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 28px;">
+              <input type="text" id="wizName" placeholder="Your Full Name *" required style="padding: 16px; background: var(--bg-card); border: 1px solid var(--border-subtle); color: var(--text-primary); font-family: var(--font-body); font-size: 0.95rem; border-radius: 4px;">
+              <input type="email" id="wizEmail" placeholder="Work Email Address *" required style="padding: 16px; background: var(--bg-card); border: 1px solid var(--border-subtle); color: var(--text-primary); font-family: var(--font-body); font-size: 0.95rem; border-radius: 4px;">
+              <input type="text" id="wizCompany" placeholder="Company / Startup Name" style="padding: 16px; background: var(--bg-card); border: 1px solid var(--border-subtle); color: var(--text-primary); font-family: var(--font-body); font-size: 0.95rem; border-radius: 4px; grid-column: span 2;">
+            </div>
+
+            <div class="wizard-nav-actions">
+              <button type="button" class="btn-prev" onclick="goToWizardStep(5)">← Back</button>
+              <button type="button" class="btn-next" style="background: var(--accent-amber); color: #000;" onclick="submitProjectWizard()">Submit Architecture Request →</button>
+            </div>
+          </div>
+
+        </form>
+
+        <!-- INTAKE RECEIPT CONFIRMATION -->
+        <div id="wizardReceiptContainer" style="display: none;">
+          <div class="receipt-card">
+            <div style="display: flex; justify-content: space-between; align-items: baseline; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 16px;">
+              <div>
+                <span class="hero-tag" style="color: var(--accent-emerald); border-color: var(--accent-emerald);">INTAKE VERIFIED</span>
+                <h3 style="font-family: var(--font-display); font-size: 1.8rem; margin-top: 8px;">Intake Dispatch Confirmed</h3>
+              </div>
+              <div style="font-family: var(--font-tech); font-size: 1.2rem; font-weight: 700; color: var(--accent-amber);" id="receiptId">#CDN-000000</div>
+            </div>
+
+            <div class="grid-2" style="font-family: var(--font-tech); font-size: 0.85rem; color: var(--text-secondary); gap: 12px; margin-top: 10px;">
+              <div><span>Scope: </span><strong style="color: var(--text-primary);" id="receiptScope"></strong></div>
+              <div><span>Stage: </span><strong style="color: var(--text-primary);" id="receiptStage"></strong></div>
+              <div><span>Investment: </span><strong style="color: var(--text-primary);" id="receiptBudget"></strong></div>
+              <div><span>Timeline: </span><strong style="color: var(--text-primary);" id="receiptTimeline"></strong></div>
+              <div style="grid-column: span 2;"><span>Recipient: </span><strong style="color: var(--text-primary);" id="receiptEmail"></strong></div>
+            </div>
+
+            <div style="background: rgba(16, 185, 129, 0.08); border: 1px solid var(--accent-emerald); padding: 18px 20px; font-size: 0.95rem; line-height: 1.6; margin-top: 10px;">
+              ✓ Your architectural specifications have entered our direct director review queue. We will respond within 24 business hours with an initial evaluation.
+            </div>
+
+            <div style="margin-top: 14px;">
+              <a href="#hero" class="btn-action-pill">Return to Top ↑</a>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- 11. MONUMENTAL STUDIO FINALE -->
+    <footer class="studio-finale" id="finale">
+      <div class="finale-monumental-text">
+        LET'S BUILD <br>SOMETHING.
+      </div>
+
+      <div class="finale-contact-row">
+        <div>
+          <div style="font-family: var(--font-ui); font-size: 0.75rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 12px;">DIRECT INQUIRY CHANNEL</div>
+          <a href="mailto:hello@codden.tech" class="direct-mail">hello@codden.tech</a>
+        </div>
+
+        <div class="finale-social-cluster">
+          <a href="https://github.com" target="_blank" rel="noopener" class="finale-social-link">GitHub ↗</a>
+          <a href="https://linkedin.com" target="_blank" rel="noopener" class="finale-social-link">LinkedIn ↗</a>
+          <a href="https://x.com" target="_blank" rel="noopener" class="finale-social-link">X / Twitter ↗</a>
+          <a href="https://dribbble.com" target="_blank" rel="noopener" class="finale-social-link">Dribbble ↗</a>
+        </div>
+      </div>
+
+      <div class="finale-bottom-meta">
+        <span>© 2026 CODDEN ATELIER. ALL RIGHTS RESERVED.</span>
+        <span>ENGINEERED WITH ZERO-SURFACE TOLERANCE</span>
+      </div>
+    </footer>
+
+  </div>
+
+  <!-- JAVASCRIPT: HERO OPENING & 3D CARD PHYSICS -->
+  <script>
+    (function () {
+      'use strict';
+
+      // Card Deck Kinetics
+      const deckTilt = document.getElementById('deckTilt');
+      const deckAnchor = document.getElementById('deckAnchor');
+      const cards = Array.from(document.querySelectorAll('.deck-card'));
+      let currentTopIndex = 0;
+      const totalCards = cards.length;
+      const CYCLE_MS = 9000;
+
+      function updateCardPositions() {
+        cards.forEach((card, index) => {
+          const relativePos = (index - currentTopIndex + totalCards) % totalCards;
+          card.classList.remove('pos-0', 'pos-1', 'pos-2', 'pos-3', 'pos-behind');
+
+          if (relativePos === 0) card.classList.add('pos-0');
+          else if (relativePos === 1) card.classList.add('pos-1');
+          else if (relativePos === 2) card.classList.add('pos-2');
+          else if (relativePos === 3) card.classList.add('pos-3');
+          else card.classList.add('pos-behind');
+        });
+      }
+
+      function advanceCard() {
+        if (window.isCaseDrawerOpen) return;
+        currentTopIndex = (currentTopIndex + 1) % totalCards;
+        updateCardPositions();
+      }
+
+      function prevCard() {
+        if (window.isCaseDrawerOpen) return;
+        currentTopIndex = (currentTopIndex - 1 + totalCards) % totalCards;
+        updateCardPositions();
+      }
+
+      // Mouse drag scrub
+      let isDragging = false;
+      let startDragX = 0;
+
+      deckAnchor.addEventListener('mousedown', (e) => {
+        isDragging = true;
+        startDragX = e.clientX;
+      });
+
+      window.addEventListener('mouseup', () => {
+        isDragging = false;
+      });
+
+      window.addEventListener('mousemove', (e) => {
+        if (!isDragging || window.isCaseDrawerOpen) return;
+        const delta = e.clientX - startDragX;
+        if (Math.abs(delta) > 48) {
+          isDragging = false;
+          if (delta < 0) advanceCard();
+          else prevCard();
+        }
+      });
+
+      deckAnchor.addEventListener('click', (e) => {
+        if (e.target.closest('.deck-card')) return;
+        advanceCard();
+      });
+
+      // Keyboard: the top card promises a case study, so it has to open without a mouse
+      cards.forEach(card => {
+        card.setAttribute('tabindex', '0');
+        card.setAttribute('role', 'button');
+        card.addEventListener('keydown', (e) => {
+          if (e.key !== 'Enter' && e.key !== ' ') return;
+          e.preventDefault();
+          if (window.openCaseStudy) window.openCaseStudy(card.getAttribute('data-case'));
+        });
+      });
+
+      // Wheel advance in hero top area
+      let wheelCooling = false;
+      window.addEventListener('wheel', (e) => {
+        if (window.scrollY < 200) {
+          if (wheelCooling) return;
+          if (Math.abs(e.deltaY) > 35) {
+            wheelCooling = true;
+            setTimeout(() => { wheelCooling = false; }, 400);
+            if (e.deltaY > 0) advanceCard();
+            else prevCard();
+          }
+        }
+      }, { passive: true });
+
+      // Auto cycle occasionally if idle
+      let idleInterval = setInterval(advanceCard, CYCLE_MS);
+      window.addEventListener('mousemove', () => {
+        clearInterval(idleInterval);
+        idleInterval = setInterval(advanceCard, CYCLE_MS);
+      }, { passive: true });
+
+      // -------------------------------------------------------------
+      // SMART STICKY NAVBAR: hides on scroll down, reveals on scroll up
+      // -------------------------------------------------------------
+      const studioNav = document.querySelector('header.studio-nav');
+      if (studioNav) {
+        let lastScrollY = window.scrollY;
+        let ticking = false;
+        const scrollThreshold = 8;
+
+        function handleSmartNav() {
+          const currentScrollY = window.scrollY;
+
+          // Always visible near top of page
+          if (currentScrollY <= 60) {
+            studioNav.classList.remove('is-hidden');
+            lastScrollY = currentScrollY;
+            ticking = false;
+            return;
+          }
+
+          const delta = currentScrollY - lastScrollY;
+
+          if (Math.abs(delta) > scrollThreshold) {
+            if (delta > 0) {
+              // Scrolling down the page -> hide navbar
+              studioNav.classList.add('is-hidden');
+            } else {
+              // Scrolling up the page -> show navbar
+              studioNav.classList.remove('is-hidden');
+            }
+            lastScrollY = currentScrollY;
+          }
+
+          ticking = false;
+        }
+
+        window.addEventListener('scroll', () => {
+          if (!ticking) {
+            window.requestAnimationFrame(handleSmartNav);
+            ticking = true;
+          }
+        }, { passive: true });
+      }
+
+    })();
+  </script>
+  <script src="js/codden.js"></script>
+</body>
+</html>

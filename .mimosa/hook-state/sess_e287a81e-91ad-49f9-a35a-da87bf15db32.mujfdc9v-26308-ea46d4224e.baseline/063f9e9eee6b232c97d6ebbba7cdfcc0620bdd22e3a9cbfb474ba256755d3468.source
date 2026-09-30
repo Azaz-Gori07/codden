@@ -1,0 +1,785 @@
+/**
+ * CODDEN — Unified Atelier Engine & Ultra-Motion Controller
+ * Features:
+ * 1. Ambient cursor spotlight tracking & HUD telemetry
+ * 2. 3D card tilt & specular light glare physics
+ * 3. Magnetic micro-button interactions
+ * 4. Section scrollspy & smooth anchor glide
+ * 5. Interactive case study sliding documentary drawer
+ * 6. Diagnostic scenario finder tab controller
+ * 7. Interactive SVG technology topology radar
+ * 8. 6-step project intake wizard with dynamic receipt generation
+ * 9. CODDEN // DIRECTORY sliding side navbar
+ * 10. Universal IntersectionObserver scroll reveal engine
+ */
+
+document.addEventListener('DOMContentLoaded', () => {
+  // Guaranteed Opening Curtain Dismissal: Full CODDEN name loads, holds, then curtain glides upwards
+  setTimeout(() => {
+    const curtain = document.getElementById('openingCurtain');
+    if (curtain) {
+      curtain.classList.add('revealed');
+      setTimeout(() => {
+        curtain.style.display = 'none';
+      }, 1050);
+    }
+  }, 1500);
+
+  // ==========================================================================
+  // 1. AMBIENT CURSOR SPOTLIGHT & HUD TELEMETRY
+  // ==========================================================================
+  let ambientSpotlight = document.querySelector('.ambient-cursor-spotlight');
+  if (!ambientSpotlight) {
+    ambientSpotlight = document.createElement('div');
+    ambientSpotlight = Object.assign(ambientSpotlight, { className: 'ambient-cursor-spotlight' });
+    document.body.prepend(ambientSpotlight);
+  }
+
+  // Create HUD Telemetry Strip if not present
+  let hudStrip = document.querySelector('.hud-telemetry-strip');
+  if (!hudStrip) {
+    hudStrip = document.createElement('div');
+    hudStrip.className = 'hud-telemetry-strip';
+    hudStrip.innerHTML = `
+      <div class="hud-item"><span class="hud-pulse"></span><span>SYS // <strong class="hud-val">ACTIVE</strong></span></div>
+      <div class="hud-item"><span>POS // <strong class="hud-val" id="hudCoord">X: 0000 Y: 0000</strong></span></div>
+      <div class="hud-item"><span>SEC // <strong class="hud-val" id="hudSec">00 HERO</strong></span></div>
+      <div class="hud-item"><span>SCR // <strong class="hud-val" id="hudScroll">0%</strong></span></div>
+      <div class="hud-item"><span class="hud-val live-timecode">UTC 00:00:00:00</span></div>
+    `;
+    document.body.appendChild(hudStrip);
+  }
+
+  const hudCoordEl = document.getElementById('hudCoord');
+  const hudSecEl = document.getElementById('hudSec');
+  const hudScrollEl = document.getElementById('hudScroll');
+
+  let mouseX = window.innerWidth / 2;
+  let mouseY = window.innerHeight / 2;
+  let mouseTicking = false;
+
+  window.addEventListener('mousemove', (e) => {
+    mouseX = e.clientX;
+    mouseY = e.clientY;
+    if (!mouseTicking) {
+      window.requestAnimationFrame(() => {
+        document.documentElement.style.setProperty('--mouse-x', `${mouseX}px`);
+        document.documentElement.style.setProperty('--mouse-y', `${mouseY}px`);
+        if (hudCoordEl) {
+          hudCoordEl.textContent = `X: ${String(mouseX).padStart(4, '0')} Y: ${String(mouseY).padStart(4, '0')}`;
+        }
+        mouseTicking = false;
+      });
+      mouseTicking = true;
+    }
+  }, { passive: true });
+
+  // ==========================================================================
+  // 2. 3D SPECULAR LIGHT & TACTILE CARD TILT PHYSICS
+  // ==========================================================================
+  const tiltCards = document.querySelectorAll('.tilt-card, .work-item, .level-card, .domain-card, .essay-card');
+  tiltCards.forEach(card => {
+    // Inject specular glare overlay if missing
+    let glare = card.querySelector('.specular-glare');
+    if (!glare) {
+      glare = document.createElement('div');
+      glare.className = 'specular-glare';
+      card.appendChild(glare);
+    }
+
+    card.addEventListener('mousemove', (e) => {
+      const rect = card.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+      const centerX = rect.width / 2;
+      const centerY = rect.height / 2;
+
+      const rotateX = ((y - centerY) / centerY) * -6; // max 6 deg
+      const rotateY = ((x - centerX) / centerX) * 6;  // max 6 deg
+
+      card.style.transform = `perspective(1000px) rotateX(${rotateX.toFixed(2)}deg) rotateY(${rotateY.toFixed(2)}deg) translateY(-4px)`;
+      card.style.setProperty('--glare-x', `${(x / rect.width * 100).toFixed(1)}%`);
+      card.style.setProperty('--glare-y', `${(y / rect.height * 100).toFixed(1)}%`);
+    });
+
+    card.addEventListener('mouseleave', () => {
+      card.style.transform = '';
+    });
+  });
+
+  // ==========================================================================
+  // 3. MAGNETIC MICRO-INTERACTIONS FOR ACTION BUTTONS
+  // ==========================================================================
+  const magneticElements = document.querySelectorAll('.btn-talk, .btn-action-pill, #floatingDirTrigger, #drawerClose, .menu-trigger');
+  magneticElements.forEach(btn => {
+    btn.addEventListener('mousemove', (e) => {
+      const rect = btn.getBoundingClientRect();
+      const x = e.clientX - (rect.left + rect.width / 2);
+      const y = e.clientY - (rect.top + rect.height / 2);
+      btn.style.transform = `translate(${x * 0.25}px, ${y * 0.25}px)`;
+    });
+
+    btn.addEventListener('mouseleave', () => {
+      btn.style.transform = '';
+    });
+  });
+
+  // ==========================================================================
+  // 4. SCROLL PROGRESS & SCROLLSPY SECTION DETECTOR
+  // ==========================================================================
+  let progressBar = document.querySelector('.scroll-progress-line');
+  if (!progressBar) {
+    progressBar = document.createElement('div');
+    progressBar.className = 'scroll-progress-line';
+    document.body.appendChild(progressBar);
+  }
+
+  const sections = document.querySelectorAll('section[id], footer[id]');
+  const navLinks = document.querySelectorAll('.nav-link, .nav-pill-item, .drawer-nav-item a');
+
+  let scrollTicking = false;
+  function onScroll() {
+    const totalHeight = document.documentElement.scrollHeight - window.innerHeight;
+    const scrollY = window.scrollY;
+
+    if (totalHeight > 0) {
+      const pct = Math.min(Math.max((scrollY / totalHeight) * 100, 0), 100);
+      progressBar.style.width = `${pct.toFixed(2)}%`;
+      if (hudScrollEl) {
+        hudScrollEl.textContent = `${Math.round(pct)}%`;
+      }
+    }
+
+    // Scrollspy: detect active section
+    let currentSecId = 'hero';
+    let currentSecLabel = '00 HERO';
+    const vhOffset = window.innerHeight * 0.35;
+
+    sections.forEach(sec => {
+      const top = sec.offsetTop - vhOffset;
+      const height = sec.offsetHeight;
+      if (scrollY >= top && scrollY < top + height) {
+        currentSecId = sec.getAttribute('id') || 'hero';
+        const tag = sec.querySelector('.hero-tag, .section-eyebrow, .brand-logo');
+        if (tag) {
+          const txt = tag.textContent.trim().split('//')[0].trim().substring(0, 14);
+          currentSecLabel = `${txt}`;
+        } else {
+          currentSecLabel = (currentSecId || '').toUpperCase();
+        }
+      }
+    });
+
+    if (hudSecEl) {
+      hudSecEl.textContent = currentSecLabel;
+    }
+
+    // Update active nav links
+    navLinks.forEach(link => {
+      const href = link.getAttribute('href');
+      if (href === `#${currentSecId}` || (currentSecId === 'hero' && (href === '#hero' || href === 'index.html'))) {
+        link.classList.add('active');
+      } else if (href.startsWith('#')) {
+        link.classList.remove('active');
+      }
+    });
+
+    // Parallax micro-offset on media
+    const parallaxMedia = document.querySelectorAll('.work-media img, .scroll-parallax-media');
+    const vh = window.innerHeight;
+    parallaxMedia.forEach(img => {
+      const rect = img.parentElement ? img.parentElement.getBoundingClientRect() : img.getBoundingClientRect();
+      if (rect.top < vh && rect.bottom > 0) {
+        const center = (rect.top + rect.height / 2) / vh;
+        const translateY = (center - 0.5) * -16;
+        img.style.transform = `translateY(${translateY.toFixed(1)}px) scale(1.04)`;
+      }
+    });
+
+    scrollTicking = false;
+  }
+
+  window.addEventListener('scroll', () => {
+    if (!scrollTicking) {
+      window.requestAnimationFrame(onScroll);
+      scrollTicking = true;
+    }
+  }, { passive: true });
+
+  onScroll();
+
+  // Smooth scroll with offset for internal anchor links
+  document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+    anchor.addEventListener('click', function (e) {
+      const targetId = this.getAttribute('href');
+      if (targetId === '#' || targetId === '') return;
+      const targetEl = document.querySelector(targetId);
+      if (targetEl) {
+        e.preventDefault();
+        const headerOffset = 64;
+        const elementPosition = targetEl.getBoundingClientRect().top;
+        const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+        window.scrollTo({
+          top: offsetPosition,
+          behavior: 'smooth'
+        });
+      }
+    });
+  });
+
+  // ==========================================================================
+  // 5. CODDEN // DIRECTORY SIDENAVBAR CONTROLLER
+  // ==========================================================================
+  const navDrawer = document.getElementById('navDrawer');
+  let backdrop = document.querySelector('.nav-drawer-backdrop');
+  if (!backdrop) {
+    backdrop = document.createElement('div');
+    backdrop.className = 'nav-drawer-backdrop';
+    document.body.appendChild(backdrop);
+  }
+
+  let floatingTrigger = document.querySelector('.floating-dir-trigger');
+  if (!floatingTrigger) {
+    floatingTrigger = document.createElement('button');
+    floatingTrigger.className = 'floating-dir-trigger';
+    floatingTrigger.id = 'floatingDirTrigger';
+    floatingTrigger.setAttribute('aria-label', 'Open CODDEN Directory Sidenavbar');
+    floatingTrigger.innerHTML = '<span class="dock-dot"></span><span>DIRECTORY // ☰</span>';
+    document.body.appendChild(floatingTrigger);
+  }
+
+  function openSidenavbar() {
+    if (navDrawer) navDrawer.classList.add('open');
+    backdrop.classList.add('active');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeSidenavbar() {
+    if (navDrawer) navDrawer.classList.remove('open');
+    backdrop.classList.remove('active');
+    document.body.style.overflow = '';
+  }
+
+  const openTriggers = document.querySelectorAll('#menuToggle, .menu-trigger, #floatingDirTrigger, .open-directory-btn');
+  openTriggers.forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.preventDefault();
+      openSidenavbar();
+    });
+  });
+
+  const drawerClose = document.getElementById('drawerClose');
+  if (drawerClose) {
+    drawerClose.addEventListener('click', (e) => {
+      e.preventDefault();
+      closeSidenavbar();
+    });
+  }
+
+  backdrop.addEventListener('click', () => {
+    closeSidenavbar();
+  });
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      closeSidenavbar();
+      closeCaseStudy();
+    }
+  });
+
+  if (navDrawer) {
+    navDrawer.querySelectorAll('a').forEach(link => {
+      link.addEventListener('click', () => {
+        closeSidenavbar();
+      });
+    });
+  }
+
+  // ==========================================================================
+  // 6. INTERACTIVE CASE STUDY SLIDING DRAWER
+  // ==========================================================================
+  const caseStudiesData = {
+    aura: {
+      badge: 'CASE 00 // FLAGSHIP DOCUMENTARY',
+      title: 'Aura OS Spatial Interface',
+      subtitle: 'Next-generation spatial canvas engineered in WebGL & Rust/WASM, reducing latency by 74%.',
+      image: 'assets/card3.jpg',
+      tags: ['Rust / WASM', 'WebGL 2.0', 'Custom Render Pipeline', 'Spatial UX'],
+      challenge: 'Existing browser-based design canvases bottleneck on the main JavaScript thread once node counts exceed 5,000 objects. Memory consumption escalates and drag latencies drop below 24fps.',
+      solution: 'We engineered a bespoke WebGL 2.0 rendering harness powered by Rust compiled to WebAssembly. The entire spatial scene graph lives in linear WASM memory, bypassing DOM overhead entirely.',
+      metrics: [
+        { val: '60 FPS', label: 'Locked Framerate at 25,000 Nodes' },
+        { val: '74%', label: 'CPU Usage Reduction vs. SVG' },
+        { val: '< 8ms', label: 'Motion-to-Photon Input Latency' }
+      ],
+      stack: 'Rust • WebAssembly • WebGL 2.0 • GLSL Shaders • TypeScript • Edge Workers'
+    },
+    rideflow: {
+      badge: 'CASE 01 // MOBILITY & REAL-TIME DISPATCH',
+      title: 'Rideflow Urban Dispatch Platform',
+      subtitle: 'High-concurrency dispatch system coordinating real-time driver journeys and micro-billing.',
+      image: 'assets/card3.jpg',
+      tags: ['Distributed Go', 'WebSockets', 'PostGIS', 'Sub-50ms Latency'],
+      challenge: 'Peak surge hours caused catastrophic socket dropouts and race conditions in driver state allocation, resulting in ride cancellation spikes and missed revenue.',
+      solution: 'Architected an asynchronous event-driven state machine using Go and Redis cluster pub/sub with deterministic geo-fencing in PostGIS. Guaranteed exactly-once booking semantics.',
+      metrics: [
+        { val: '120,000+', label: 'Concurrent Driver Sessions' },
+        { val: '38ms', label: 'Average Dispatch Allocation Time' },
+        { val: '99.99%', label: 'Peak Hour Booking Reliability' }
+      ],
+      stack: 'Go (Golang) • Redis Cluster • PostgreSQL/PostGIS • WebSockets • Kubernetes'
+    },
+    neurolens: {
+      badge: 'CASE 02 // ENTERPRISE AI & REGULATORY EMBEDDINGS',
+      title: 'NeuroLens AI Intelligence Engine',
+      subtitle: 'Autonomous multi-modal intelligence pipeline parsing high-volume regulatory filings.',
+      image: 'assets/card4.jpg',
+      tags: ['Private Vector DB', 'Autonomous Agents', 'Deterministic RAG', 'Python / FastAPI'],
+      challenge: 'Legal and financial analysts were drowning under 8,000+ monthly regulatory updates. Standard commercial LLMs hallucinated compliance citations and suffered token limits.',
+      solution: 'Built a private zero-retention embedding pipeline with hybrid BM25 + dense vector retrieval, deterministic source grounding, and automated audit-trail verification.',
+      metrics: [
+        { val: '100%', label: 'Deterministic Citation Verification' },
+        { val: '82%', label: 'Time Saved in Regulatory Review' },
+        { val: '0', label: 'Data Leakage / Private VPC' }
+      ],
+      stack: 'Python • FastAPI • Qdrant Vector DB • LangGraph • Llama 3 • Docker'
+    },
+    apex: {
+      badge: 'CASE 03 // FINANCIAL INFRASTRUCTURE & ANALYTICS',
+      title: 'Apex Metrics Financial Engine',
+      subtitle: 'Columnar time-series analytics engine processing high-throughput market feeds with sub-50ms responses.',
+      image: 'assets/card2.jpg',
+      tags: ['ClickHouse', 'Time-Series', 'Risk Modeling', 'Sub-50ms Queries'],
+      challenge: 'Relational databases buckled under 100M+ daily market ticks, causing reporting dashboards to time out during volatile market trading windows.',
+      solution: 'Deployed a ClickHouse distributed columnar database with materialized rollups and WebSocket delta-streaming, allowing real-time portfolio risk recalculation.',
+      metrics: [
+        { val: '100M+', label: 'Daily Market Events Ingested' },
+        { val: '42ms', label: 'Median Query Execution Time' },
+        { val: '10x', label: 'Server Cost Reduction vs. Legacy' }
+      ],
+      stack: 'ClickHouse • Node.js / Rust • Kafka • React • Docker Swarm'
+    },
+    veloce: {
+      badge: 'CASE 04 // 3D SPATIAL & BESPOKE CONFIGURATION',
+      title: 'Veloce Hypercar 3D Experience',
+      subtitle: 'Real-time 3D vehicle configurator engineered in Three.js WebGL with ray-traced material fidelity.',
+      image: 'assets/card1.jpg',
+      tags: ['Three.js WebGL', 'Custom PBR Shaders', 'GLTF Draco Compression', '60fps Mobile'],
+      challenge: 'Photorealistic automotive assets are typically massive (150MB+), leading to 30-second mobile load times and poor customer conversion.',
+      solution: 'Created an automated Draco-compression asset pipeline paired with custom physical PBR shaders and dynamic mipmap streaming, fitting the full 3D car into a 6.2MB budget.',
+      metrics: [
+        { val: '6.2 MB', label: 'Total Initial Asset Payload' },
+        { val: '1.4s', label: 'Mobile Interactive Load Time' },
+        { val: '310%', label: 'Increase in Session Engagement' }
+      ],
+      stack: 'Three.js • WebGL • GLTF Draco • Blender Pipeline • Vanilla JS'
+    }
+  };
+
+  // Build Case Study Drawer if missing
+  let caseDrawer = document.getElementById('caseStudyDrawer');
+  let caseBackdrop = document.querySelector('.case-drawer-backdrop');
+
+  if (!caseDrawer) {
+    caseBackdrop = document.createElement('div');
+    caseBackdrop.className = 'case-drawer-backdrop';
+    document.body.appendChild(caseBackdrop);
+
+    caseDrawer = document.createElement('div');
+    caseDrawer.id = 'caseStudyDrawer';
+    caseDrawer.className = 'case-study-drawer';
+    caseDrawer.innerHTML = `
+      <div class="case-drawer-header">
+        <span class="brand-logo" id="caseDrawerBadge">CASE DOCUMENTARY</span>
+        <button class="case-drawer-close" id="caseDrawerClose">CLOSE ✕</button>
+      </div>
+      <div class="case-drawer-body">
+        <div>
+          <h2 id="caseDrawerTitle" style="font-family: var(--font-display); font-size: 2.2rem; margin-bottom: 12px;"></h2>
+          <p id="caseDrawerSubtitle" style="font-size: 1.05rem; color: var(--text-secondary);"></p>
+        </div>
+        <div style="border-radius: 12px; overflow: hidden; height: 320px; border: 1px solid var(--border-subtle);">
+          <img id="caseDrawerImg" src="" alt="Case Study Cover" style="width: 100%; height: 100%; object-fit: cover;">
+        </div>
+        <div class="grid-3" id="caseDrawerMetrics" style="gap: 16px;"></div>
+        <div>
+          <h4 style="font-family: var(--font-tech); font-size: 0.82rem; letter-spacing: 0.1em; color: var(--accent-amber); text-transform: uppercase; margin-bottom: 8px;">The Commercial Challenge</h4>
+          <p id="caseDrawerChallenge" style="color: var(--text-secondary); font-size: 0.95rem; line-height: 1.65;"></p>
+        </div>
+        <div>
+          <h4 style="font-family: var(--font-tech); font-size: 0.82rem; letter-spacing: 0.1em; color: var(--accent-emerald); text-transform: uppercase; margin-bottom: 8px;">Architectural Execution</h4>
+          <p id="caseDrawerSolution" style="color: var(--text-secondary); font-size: 0.95rem; line-height: 1.65;"></p>
+        </div>
+        <div style="background: rgba(255,255,255,0.03); border: 1px solid var(--border-subtle); padding: 18px 20px; border-radius: 4px;">
+          <span style="font-family: var(--font-tech); font-size: 0.72rem; color: var(--text-muted); text-transform: uppercase; display: block; margin-bottom: 6px;">Production Technology Stack</span>
+          <span id="caseDrawerStack" style="font-family: var(--font-tech); font-size: 0.88rem; color: var(--text-primary);"></span>
+        </div>
+        <a href="#contact" class="btn-action-pill" id="caseDrawerCta" style="text-align: center; padding: 16px; margin-top: 10px;">Discuss an Architecture Like This →</a>
+      </div>
+    `;
+    document.body.appendChild(caseDrawer);
+
+    document.getElementById('caseDrawerClose').addEventListener('click', closeCaseStudy);
+    caseBackdrop.addEventListener('click', closeCaseStudy);
+    document.getElementById('caseDrawerCta').addEventListener('click', () => {
+      closeCaseStudy();
+    });
+  }
+
+  function openCaseStudy(key) {
+    const data = caseStudiesData[key] || caseStudiesData.aura;
+    document.getElementById('caseDrawerBadge').textContent = data.badge;
+    document.getElementById('caseDrawerTitle').textContent = data.title;
+    document.getElementById('caseDrawerSubtitle').textContent = data.subtitle;
+    document.getElementById('caseDrawerImg').src = data.image;
+    document.getElementById('caseDrawerChallenge').textContent = data.challenge;
+    document.getElementById('caseDrawerSolution').textContent = data.solution;
+    document.getElementById('caseDrawerStack').textContent = data.stack;
+
+    const metricsContainer = document.getElementById('caseDrawerMetrics');
+    metricsContainer.innerHTML = data.metrics.map(m => `
+      <div style="background: rgba(0,0,0,0.4); border: 1px solid var(--border-subtle); padding: 14px 16px;">
+        <div style="font-family: var(--font-display); font-size: 1.5rem; font-weight: 800; color: var(--text-primary);">${m.val}</div>
+        <div style="font-family: var(--font-tech); font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; margin-top: 4px;">${m.label}</div>
+      </div>
+    `).join('');
+
+    caseDrawer.classList.add('open');
+    caseBackdrop.classList.add('active');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeCaseStudy() {
+    if (caseDrawer) caseDrawer.classList.remove('open');
+    if (caseBackdrop) caseBackdrop.classList.remove('active');
+    document.body.style.overflow = '';
+  }
+
+  // Bind clicks on case items
+  document.querySelectorAll('[data-case]').forEach(el => {
+    el.addEventListener('click', (e) => {
+      e.preventDefault();
+      const key = el.getAttribute('data-case');
+      openCaseStudy(key);
+    });
+  });
+
+  // ==========================================================================
+  // 7. DIAGNOSTIC SCENARIO FINDER CONTROLLER
+  // ==========================================================================
+  const finderTabs = document.querySelectorAll('.finder-tab');
+  const finderResults = document.querySelectorAll('.finder-result');
+  finderTabs.forEach(tab => {
+    tab.addEventListener('click', () => {
+      finderTabs.forEach(t => t.classList.remove('active'));
+      finderResults.forEach(r => r.classList.remove('active'));
+      tab.classList.add('active');
+      const targetId = tab.getAttribute('data-target');
+      const targetResult = document.getElementById(targetId);
+      if (targetResult) targetResult.classList.add('active');
+    });
+  });
+
+  // ==========================================================================
+  // 8. INTERACTIVE SVG TECHNOLOGY TOPOLOGY RADAR
+  // ==========================================================================
+  const techNodesData = {
+    codden: {
+      title: 'CODDEN CORE ARCHITECTURE LAYER',
+      desc: 'Central coordination layer uniting Product Strategy, Design Systems, High-Concurrency Engineering, and Cloud Infrastructure under one single responsible team.',
+      status: 'STUDIO CORE // ZERO-HANDOFF ENGINE'
+    },
+    frontend: {
+      title: 'FRONTEND ARCHITECTURE & WEB STANDARDS',
+      desc: 'Next.js, React, WebGL, Vanilla CSS, WebAssembly. Sub-second initial paints, 60fps render cycles, accessible DOM hierarchies, and zero layout shift.',
+      status: 'VERIFIED // SUB-100MS FCP'
+    },
+    backend: {
+      title: 'HIGH-CONCURRENCY BACKEND SYSTEMS',
+      desc: 'Go, Node.js, Python, PostgreSQL, Redis, gRPC microservices. Asynchronous event loops, database connection pooling, and deterministic data modeling.',
+      status: 'VERIFIED // 100K+ RPS THROUGHPUT'
+    },
+    mobile: {
+      title: 'NATIVE & CROSS-PLATFORM MOBILE',
+      desc: 'Swift (iOS), Kotlin (Android), Flutter, React Native. Native offline storage, background GPS telemetry, biometric auth, and butter-smooth gestures.',
+      status: 'VERIFIED // 60FPS RUNTIME'
+    },
+    ai: {
+      title: 'INTELLIGENCE, AGENTS & VECTOR ENGINES',
+      desc: 'Autonomous multi-step agents, private VPC retrieval-augmented generation (RAG), vector embeddings with Qdrant/Pinecone, and automated safety fences.',
+      status: 'VERIFIED // ZERO HALLUCINATION TRAPS'
+    },
+    data: {
+      title: 'STREAMING & COLUMNAR ANALYTICS',
+      desc: 'ClickHouse, Kafka, PostgreSQL, Redis, Elasticsearch. Time-series market ingestion, multi-tenant partitioning, and sub-50ms aggregation queries.',
+      status: 'VERIFIED // 100M+ DAILY EVENTS'
+    },
+    cloud: {
+      title: 'MULTI-REGION CLOUD INFRASTRUCTURE',
+      desc: 'Docker, Kubernetes, AWS, Cloudflare Edge, Terraform. Automated blue/green rollouts, DDOS mitigation, and SOC2 compliant telemetry.',
+      status: 'VERIFIED // 99.99% PRODUCTION SLA'
+    }
+  };
+
+  const nodeHubs = document.querySelectorAll('.node-hub');
+  const nodeTitle = document.getElementById('nodeTitle');
+  const nodeDesc = document.getElementById('nodeDesc');
+  const nodeStatus = document.getElementById('nodeStatus');
+
+  nodeHubs.forEach(node => {
+    node.addEventListener('mouseenter', () => {
+      const key = node.getAttribute('data-node');
+      const data = techNodesData[key];
+      if (data && nodeTitle && nodeDesc && nodeStatus) {
+        nodeTitle.textContent = data.title;
+        nodeDesc.textContent = data.desc;
+        nodeStatus.textContent = data.status;
+      }
+    });
+  });
+
+  // ==========================================================================
+  // 9. 6-STEP PROJECT INTAKE WIZARD CONTROLLER
+  // ==========================================================================
+  let currentWizardStep = 1;
+  const wizardData = {
+    scope: 'Full-Stack Web App',
+    stage: 'New Product (0 to 1)',
+    synopsis: '',
+    budget: '$25,000 - $50,000',
+    timeline: '8 - 12 Weeks',
+    name: '',
+    email: '',
+    company: ''
+  };
+
+  window.goToWizardStep = function (step) {
+    if (step < 1 || step > 6) return;
+    
+    // Mark previous as completed
+    const currentPill = document.querySelector(`.progress-step-pill[data-step="${currentWizardStep}"]`);
+    if (step > currentWizardStep && currentPill) {
+      currentPill.classList.add('completed');
+    }
+
+    document.querySelectorAll('.wizard-step-pane').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.progress-step-pill').forEach(p => p.classList.remove('active'));
+
+    const nextPane = document.getElementById(`stepPane${step}`);
+    const nextPill = document.querySelector(`.progress-step-pill[data-step="${step}"]`);
+    if (nextPane) nextPane.classList.add('active');
+    if (nextPill) nextPill.classList.add('active');
+
+    currentWizardStep = step;
+  };
+
+  // Selection tiles
+  document.querySelectorAll('.selection-tile').forEach(tile => {
+    tile.addEventListener('click', () => {
+      const field = tile.getAttribute('data-field');
+      const val = tile.getAttribute('data-value');
+      const parent = tile.parentElement;
+      parent.querySelectorAll('.selection-tile').forEach(t => t.classList.remove('selected'));
+      tile.classList.add('selected');
+      if (field) wizardData[field] = val;
+    });
+  });
+
+  // Submit wizard
+  window.submitProjectWizard = function () {
+    const nameInput = document.getElementById('wizName');
+    const emailInput = document.getElementById('wizEmail');
+    const compInput = document.getElementById('wizCompany');
+    const descInput = document.getElementById('wizDesc');
+
+    if (nameInput) wizardData.name = nameInput.value.trim();
+    if (emailInput) wizardData.email = emailInput.value.trim();
+    if (compInput) wizardData.company = compInput.value.trim();
+    if (descInput) wizardData.synopsis = descInput.value.trim();
+
+    if (!wizardData.name || !wizardData.email) {
+      alert('Please provide your name and work email so our engineering directors can reach you.');
+      return;
+    }
+
+    const receiptNum = 'CDN-' + Math.floor(100000 + Math.random() * 900000);
+    const receiptContainer = document.getElementById('wizardReceiptContainer');
+    const formContainer = document.getElementById('projectWizardForm');
+
+    if (receiptContainer && formContainer) {
+      formContainer.style.display = 'none';
+      document.getElementById('receiptId').textContent = '#' + receiptNum;
+      document.getElementById('receiptScope').textContent = wizardData.scope;
+      document.getElementById('receiptStage').textContent = wizardData.stage;
+      document.getElementById('receiptBudget').textContent = wizardData.budget;
+      document.getElementById('receiptTimeline').textContent = wizardData.timeline;
+      document.getElementById('receiptEmail').textContent = wizardData.email;
+      receiptContainer.style.display = 'block';
+    }
+  };
+
+  // ==========================================================================
+  // 10. LIVE MASTER TIMECODE CLOCK (40ms precision)
+  // ==========================================================================
+  const clockElements = document.querySelectorAll('.live-timecode');
+  function updateTimecode() {
+    const now = new Date();
+    const hours = String(now.getUTCHours()).padStart(2, '0');
+    const minutes = String(now.getUTCMinutes()).padStart(2, '0');
+    const seconds = String(now.getUTCSeconds()).padStart(2, '0');
+    const milliseconds = String(Math.floor(now.getUTCMilliseconds() / 10)).padStart(2, '0');
+    const timeStr = `UTC ${hours}:${minutes}:${seconds}:${milliseconds}`;
+    clockElements.forEach(el => { el.textContent = timeStr; });
+  }
+
+  if (clockElements.length > 0) {
+    setInterval(updateTimecode, 40);
+    updateTimecode();
+  }
+
+  // ==========================================================================
+  // 11. UNIVERSAL INTERSECTION OBSERVER SCROLL REVEAL ENGINE
+  // ==========================================================================
+  function initScrollAnimations() {
+    // If reduced motion is requested or IntersectionObserver is not supported, reveal all immediately
+    if (!('IntersectionObserver' in window) || window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      document.querySelectorAll(`
+        .scroll-reveal-container, .scroll-reveal, .scroll-reveal-scale,
+        .scroll-reveal-left, .scroll-reveal-right, .scroll-stagger-child,
+        section, .editorial-section, .portfolio-editorial, .method-section,
+        .inquiry-section, .monument-statement-wrap, .studio-finale, .section-container
+      `).forEach(el => el.classList.add('is-revealed'));
+      return;
+    }
+
+    const containerSelectors = [
+      '.scroll-reveal-container',
+      '[data-scroll-container]',
+      '.editorial-section',
+      '.portfolio-editorial',
+      '.method-section',
+      '.inquiry-section',
+      '.monument-statement-wrap',
+      '.studio-finale',
+      '.page-hero',
+      '.section-container'
+    ];
+
+    document.querySelectorAll(containerSelectors.join(', ')).forEach(container => {
+      if (container.classList.contains('hero-viewport') || container.id === 'hero') return;
+      if (!container.classList.contains('scroll-reveal-container')) {
+        container.classList.add('scroll-reveal-container');
+      }
+      if (!container.classList.contains('scroll-border-sweep') &&
+          !container.classList.contains('page-hero')) {
+        container.classList.add('scroll-border-sweep');
+      }
+    });
+
+    const textSelectors = [
+      '.scroll-reveal',
+      '[data-scroll-reveal]',
+      '.editorial-main-title',
+      '.editorial-statement',
+      '.monument-statement',
+      '.inquiry-question',
+      '.finale-monumental-text',
+      '.section-heading',
+      '.section-desc',
+      '.section-eyebrow'
+    ];
+
+    document.querySelectorAll(textSelectors.join(', ')).forEach(el => {
+      if (!el.classList.contains('scroll-reveal') && !el.classList.contains('scroll-reveal-scale')) {
+        el.classList.add('scroll-reveal');
+      }
+    });
+
+    // Auto-stagger grids
+    const staggerGroups = [
+      { parent: '.capabilities-index', children: '.cap-row' },
+      { parent: '.work-grid', children: '.work-item' },
+      { parent: '.method-grid', children: '.method-node' },
+      { parent: '.inquiry-pills-row', children: '.inquiry-pill' },
+      { parent: '.manifesto-flow', children: 'span' },
+      { parent: '.levels-grid', children: '.level-card' },
+      { parent: '.grid-2', children: '> *' },
+      { parent: '.grid-3', children: '> *' },
+      { parent: '.grid-4', children: '> *' },
+      { parent: '.timeline-wrapper', children: '.timeline-node' }
+    ];
+
+    staggerGroups.forEach(({ parent, children }) => {
+      document.querySelectorAll(parent).forEach(pEl => {
+        try {
+          const childNodes = children === '> *' ? Array.from(pEl.children) : Array.from(pEl.querySelectorAll(children));
+          childNodes.forEach((cEl, idx) => {
+            cEl.classList.add('scroll-stagger-child');
+            cEl.style.setProperty('--stagger-i', idx);
+          });
+        } catch (e) {
+          // graceful fallback
+        }
+      });
+    });
+
+    const targetElements = document.querySelectorAll(`
+      .scroll-reveal-container,
+      .scroll-reveal,
+      .scroll-reveal-scale,
+      .scroll-reveal-left,
+      .scroll-reveal-right,
+      .scroll-stagger-child
+    `);
+
+    // Reveal all elements currently in or near initial viewport (hero area)
+    const vh = window.innerHeight;
+    targetElements.forEach(el => {
+      const rect = el.getBoundingClientRect();
+      if (rect.top < vh * 0.95 && rect.bottom > 0) {
+        el.classList.add('is-revealed');
+      }
+    });
+
+    // Enable scroll animation transitions for off-screen elements
+    document.documentElement.classList.add('has-scroll-anim');
+
+    const observer = new IntersectionObserver((entries, obs) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('is-revealed');
+          obs.unobserve(entry.target);
+        }
+      });
+    }, {
+      root: null,
+      rootMargin: '0px 0px -40px 0px',
+      threshold: 0.08
+    });
+
+    targetElements.forEach(el => {
+      if (!el.classList.contains('is-revealed')) {
+        observer.observe(el);
+      }
+    });
+
+    // Safety fallback: if anything hasn't revealed after scroll, reveal it
+    const checkSafety = () => {
+      const currentVh = window.innerHeight;
+      targetElements.forEach(el => {
+        if (!el.classList.contains('is-revealed')) {
+          const r = el.getBoundingClientRect();
+          if (r.top < currentVh * 1.1 && r.bottom > -100) {
+            el.classList.add('is-revealed');
+          }
+        }
+      });
+    };
+
+    window.addEventListener('scroll', checkSafety, { passive: true });
+    setTimeout(checkSafety, 350);
+    setTimeout(checkSafety, 1200);
+  }
+
+  initScrollAnimations();
+});
