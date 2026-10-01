@@ -546,50 +546,6 @@ a {
   color: var(--text-muted);
 }
 
-/* Floating Sidenavbar Quick-Dock Trigger */
-.floating-dir-trigger {
-  position: fixed;
-  right: 0;
-  top: 50%;
-  transform: translateY(-50%);
-  background: rgba(14, 16, 18, 0.88);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid var(--border-subtle);
-  border-right: none;
-  padding: 16px 10px;
-  border-radius: 8px 0 0 8px;
-  color: var(--text-secondary);
-  cursor: pointer;
-  z-index: 999;
-  writing-mode: vertical-rl;
-  text-orientation: mixed;
-  font-family: var(--font-tech);
-  font-size: 0.72rem;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  transition: all var(--transition-fast);
-  box-shadow: -5px 0 20px rgba(0, 0, 0, 0.4);
-}
-
-.floating-dir-trigger:hover {
-  background: var(--bg-surface);
-  color: var(--text-primary);
-  border-color: var(--border-medium);
-  padding-right: 14px;
-}
-
-.floating-dir-trigger .dock-dot {
-  width: 5px;
-  height: 5px;
-  border-radius: 50%;
-  background: var(--accent-emerald);
-  box-shadow: 0 0 6px var(--accent-emerald);
-}
-
 /* ==========================================================================
    PAGE HERO STRUCTURE
    ========================================================================== */

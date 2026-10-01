@@ -96,7 +96,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // ==========================================================================
   // 3. MAGNETIC MICRO-INTERACTIONS FOR ACTION BUTTONS
   // ==========================================================================
-  const magneticElements = document.querySelectorAll('.btn-talk, .btn-action-pill, #floatingDirTrigger, #drawerClose, .menu-trigger');
+  const magneticElements = document.querySelectorAll('.btn-talk, .btn-action-pill, #drawerClose, .menu-trigger');
   magneticElements.forEach(btn => {
     btn.addEventListener('mousemove', (e) => {
       const rect = btn.getBoundingClientRect();
@@ -224,16 +224,7 @@ document.addEventListener('DOMContentLoaded', () => {
     document.body.appendChild(backdrop);
   }
 
-  let floatingTrigger = document.querySelector('.floating-dir-trigger');
-  if (!floatingTrigger) {
-    floatingTrigger = document.createElement('button');
-    floatingTrigger.className = 'floating-dir-trigger';
-    floatingTrigger.id = 'floatingDirTrigger';
-    floatingTrigger.setAttribute('aria-label', 'Open CODDEN Directory Sidenavbar');
-    floatingTrigger.innerHTML = '<span class="dock-dot"></span><span>DIRECTORY // ☰</span>';
-    document.body.appendChild(floatingTrigger);
-  }
-
+  const openTriggers = document.querySelectorAll('#menuToggle, .menu-trigger, .open-directory-btn');
   function openSidenavbar() {
     if (navDrawer) navDrawer.classList.add('open');
     backdrop.classList.add('active');
@@ -246,7 +237,6 @@ document.addEventListener('DOMContentLoaded', () => {
     document.body.style.overflow = '';
   }
 
-  const openTriggers = document.querySelectorAll('#menuToggle, .menu-trigger, #floatingDirTrigger, .open-directory-btn');
   openTriggers.forEach(btn => {
     btn.addEventListener('click', (e) => {
       e.preventDefault();
